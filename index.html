@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test de Prévention et Sécurité en Laboratoire - GEC UPJV</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -14,12 +14,17 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        .option-btn {
+        .option-btn, .section-card {
             transition: all 0.2s ease-in-out;
         }
         .option-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+            border-color: #93c5fd;
         }
         .option-correct {
             background-color: #dcfce7 !important;
@@ -34,14 +39,11 @@
         .fade-in { animation: fadeIn 0.4s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Stili per le illustrazioni SVG */
-        .svg-illustration {
-            width: 100%;
-            height: 100%;
-            max-width: 250px;
-            max-height: 250px;
-            drop-shadow: 0 10px 15px rgba(0,0,0,0.05);
-        }
+        /* Custom Scrollbar for inner content if needed */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col">
@@ -50,82 +52,129 @@
         <div class="w-full max-w-5xl glass-panel rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative">
             
             <!-- Lato Sinistro: Area Immagine Visiva -->
-            <div class="w-full md:w-2/5 bg-slate-50 border-r border-slate-200 flex flex-col items-center justify-center p-8 relative">
+            <div class="w-full md:w-2/5 bg-slate-50 border-r border-slate-200 flex flex-col items-center justify-center p-8 relative transition-all duration-500" id="left-panel">
                 <div class="absolute top-6 left-6 text-blue-600 font-bold text-xl flex items-center gap-2">
                     <i class="fa-solid fa-flask"></i> GEC UPJV
                 </div>
                 
-                <div id="image-container" class="w-full aspect-square bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center overflow-hidden relative p-8">
-                    <!-- Il contenitore per l'immagine statica caricata da GitHub -->
-                    <img id="question-image" class="w-full h-full object-contain fade-in" src="" alt="Illustration de la question">
+                <div id="image-container" class="w-full aspect-square bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center overflow-hidden relative p-4">
+                    <!-- Immagine statica caricata da Internet come default, poi sostituita via JS -->
+                    <img id="question-image" class="w-full h-full object-contain fade-in rounded-xl" src="https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=800&q=80" alt="Illustration du laboratoire">
                 </div>
             </div>
 
             <!-- Lato Destro: Area Contenuto (Quiz) -->
-            <div class="w-full md:w-3/5 p-6 sm:p-10 flex flex-col">
+            <div class="w-full md:w-3/5 p-6 sm:p-8 flex flex-col h-full max-h-[85vh] overflow-y-auto relative transition-all duration-500" id="right-panel">
                 
-                <!-- Schermata Iniziale -->
-                <div id="screen-start" class="flex-grow flex flex-col justify-center text-center fade-in">
-                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">
-                        <i class="fa-solid fa-shield-halved"></i>
+                <!-- Schermata Iniziale & Menu Sezioni -->
+                <div id="screen-start" class="flex flex-col fade-in pb-4">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Test de Prévention et Sécurité</h1>
+                        <p class="text-sm text-slate-500 mb-4 max-w-md mx-auto leading-relaxed">
+                            Évaluez vos connaissances sur les bonnes pratiques en laboratoire.
+                        </p>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                            <button onclick="startQuiz(0)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2 text-md w-full sm:w-auto">
+                                <i class="fa-solid fa-play"></i> Test Complet
+                            </button>
+                        </div>
                     </div>
-                    <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 mb-4">Test de Prévention et Sécurité</h1>
-                    <p class="text-slate-500 mb-8 max-w-md mx-auto leading-relaxed">Bienvenue dans le questionnaire interactif du livret d'accueil UMR 7025 GEC. Évaluez vos connaissances sur les bonnes pratiques en laboratoire avec 40 questions. Les illustrations sont intégrées directement dans l'application.</p>
-                    <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all mx-auto w-full sm:w-auto flex items-center justify-center gap-3 text-lg">
-                        Commencer le Test <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+
+                    <div class="mt-4 border-t border-slate-200 pt-6">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-list-ul"></i> Ou choisissez une section
+                        </h3>
+                        
+                        <!-- Contenitore Griglia Sezioni Generato Dinamicamente -->
+                        <div id="section-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <!-- Le cards vengono iniettate qui da renderDashboard() -->
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Schermata del Quiz -->
                 <div id="screen-quiz" class="flex-grow flex flex-col hidden fade-in">
-                    <div class="flex justify-between items-center mb-6">
-                        <span class="text-sm font-semibold text-slate-400 uppercase tracking-wider" id="question-counter">Question 1 / 40</span>
-                        <div class="flex gap-1 text-yellow-500 text-sm font-bold bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">
-                            <i class="fa-solid fa-star"></i> <span id="score-display">0</span>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex flex-col gap-1.5">
+                            <span id="section-indicator" class="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md w-max uppercase tracking-wider border border-blue-200">Section</span>
+                            <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider" id="question-counter">Question 1 / 50</span>
+                        </div>
+                        
+                        <div class="flex gap-3 items-center">
+                            <!-- Pulsante per tornare al menu sezioni -->
+                            <button onclick="returnHome()" class="text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                                <i class="fa-solid fa-house"></i> Accueil
+                            </button>
+                            <div class="flex gap-1 items-center h-max text-yellow-600 text-sm font-bold bg-yellow-50 px-3 py-1.5 rounded-full border border-yellow-200">
+                                <i class="fa-solid fa-star"></i> <span id="score-display">0</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Barra di avanzamento -->
-                    <div class="w-full bg-slate-200 rounded-full h-2 mb-8 overflow-hidden">
-                        <div id="progress-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <!-- Barra di avanzamento globale -->
+                    <div class="w-full bg-slate-200 rounded-full h-1.5 mb-6 overflow-hidden">
+                        <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
 
-                    <h2 id="question-text" class="text-xl sm:text-2xl font-bold text-slate-800 mb-8 leading-snug"></h2>
+                    <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 mb-6 leading-snug"></h2>
 
-                    <div id="options-container" class="space-y-3 flex-grow">
+                    <div id="options-container" class="space-y-2.5 flex-grow">
                         <!-- Le opzioni vengono iniettate qui -->
                     </div>
 
-                    <div id="rationale-container" class="mt-6 p-5 bg-blue-50 border border-blue-100 rounded-xl hidden fade-in">
+                    <div id="rationale-container" class="mt-5 p-4 bg-blue-50 border border-blue-100 rounded-xl hidden fade-in">
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
+                            <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
                             <p id="rationale-text" class="text-sm text-blue-900 leading-relaxed"></p>
                         </div>
                     </div>
 
-                    <div class="mt-8 flex justify-end">
-                        <button id="btn-next" onclick="nextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-8 rounded-xl transition-all flex items-center gap-2">
+                    <div class="mt-6 flex justify-between items-center pt-4 border-t border-slate-100">
+                        <button id="btn-prev" onclick="prevQuestion()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-angle-left"></i> Précédent
+                        </button>
+                        <button id="btn-next" onclick="nextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 px-6 rounded-xl transition-all flex items-center gap-2 text-sm ml-auto shadow-md">
                             Suivant <i class="fa-solid fa-angle-right"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- Schermata Finale -->
-                <div id="screen-end" class="flex-grow flex flex-col items-center justify-center text-center hidden fade-in">
-                    <div class="relative w-40 h-40 mb-8">
+                <div id="screen-end" class="flex-grow flex flex-col items-center justify-start text-center hidden fade-in pb-8">
+                    <div class="relative w-32 h-32 mb-6 mt-4">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                             <circle class="text-slate-200 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
                             <circle id="score-circle" class="text-blue-500 stroke-current transition-all duration-1000 ease-out" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center flex-col">
-                            <span id="final-score-text" class="text-4xl font-bold text-slate-800">0%</span>
+                            <span id="final-score-text" class="text-3xl font-bold text-slate-800">0%</span>
                         </div>
                     </div>
-                    <h2 id="final-title" class="text-3xl font-bold text-slate-800 mb-3">Test Terminé !</h2>
-                    <p id="final-message" class="text-slate-500 mb-8 max-w-md mx-auto"></p>
-                    <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-rotate-right"></i> Recommencer
-                    </button>
+                    <h2 id="final-title" class="text-2xl font-bold text-slate-800 mb-2">Test Terminé !</h2>
+                    <p id="final-message" class="text-sm text-slate-500 mb-6 max-w-md mx-auto px-4"></p>
+                    
+                    <!-- Riepilogo Punteggi Parziali per Sezione -->
+                    <div class="w-full bg-white border border-slate-200 rounded-2xl p-5 mb-8 text-left shadow-sm">
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+                            <i class="fa-solid fa-chart-pie text-blue-500 mr-2"></i>Scores par Section
+                        </h3>
+                        <div id="results-breakdown-container" class="space-y-4">
+                            <!-- Barre di avanzamento delle sezioni iniettate qui -->
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="returnHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-6 rounded-xl transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-bars"></i> Menu
+                        </button>
+                        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Recommencer Tout
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -133,302 +182,167 @@
     </div>
 
     <script>
-        // URL base per le immagini ospitate su GitHub
-        // SOSTITUISCI QUESTO LINK CON IL PERCORSO 'RAW' DELLA TUA REPOSITORY GITHUB
-        // Esempio: "https://raw.githubusercontent.com/TUO-NOME-UTENTE/TUA-REPO/main/immagini/"
+        const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=800&q=80";
         const GITHUB_BASE_URL = "https://raw.githubusercontent.com/nicola-damelio/quiz_hygiene_et_securite/main/images/";
 
-        // I dati completi delle 40 domande basati sul documento PDF
+        // Array delle 50 domande strutturato logicamente
         const quizData = [
-            {
-                q: "Quels sont les horaires d'ouverture prévus pour les locaux de l'UPJV du lundi au vendredi ? 🕒",
-                options: ["De 8h00 à 18h00", "De 7h30 à 20h00", "De 7h30 à 19h45", "De 7h00 à 19h00"],
-                correct: 1,
-                rationale: "Le règlement stipule une plage d'ouverture fixe de 7h30 à 20h00 en semaine pour assurer l'accès sécurisé aux chercheurs.",
-                imageUrl: GITHUB_BASE_URL + "1.jpg"
-            },
-            {
-                q: "Quelle est la procédure spécifique pour signaler un incendie ou un incident au PC Sécurité en dehors des heures ouvrables ? 🛑",
-                options: ["Composer directement le numéro d'urgence national 18", "Contacter le PC Sécurité au 03 22 82 88 57 ou via le poste interne 88 57", "Utiliser le formulaire papier disponible dans le couloir", "Attendre l'arrivée du personnel permanent"],
-                correct: 1,
-                rationale: "",
-                imageUrl: GITHUB_BASE_URL + "2.jpg"
-            },
-            {
-                q: "Où se trouve le point de rassemblement désigné en cas d'évacuation du bâtiment ? 📍",
-                options: ["Sur la pelouse entre les Poulies et le HUB de l'Energie", "Dans le parking souterrain", "Dans le hall principal au rez-de-chaussée", "Directement dans la rue Baudelocque"],
-                correct: 0,
-                rationale: "Ce point de rassemblement extérieur offre un espace sûr et balisé pour regrouper le personnel évacué.",
-                imageUrl: GITHUB_BASE_URL + "3.jpg"
-            },
-            {
-                q: "Quel type d'extincteur doit être utilisé pour les incendies impliquant des armoires électriques ? 🧯",
-                options: ["Extincteur à Eau", "Extincteur à Poudre", "Extincteur à Mousse", "Extincteur à CO2"],
-                correct: 3,
-                rationale: "Le CO2 étouffe le feu sans endommager les circuits et ne conduit pas l'électricité.",
-                imageUrl: GITHUB_BASE_URL + "4.jpg"
-            },
-            {
-                q: "Que ne faut-il JAMAIS faire lors d'un appel à un numéro d'urgence (15, 18 ou 112) ? 📞",
-                options: ["Indiquer l'étage", "Raccrocher en premier", "Donner son nom", "Décrire la victime"],
-                correct: 1,
-                rationale: "Les opérateurs d'urgence doivent toujours être les premiers à mettre fin à l'appel pour s'assurer d'avoir toutes les informations.",
-                imageUrl: GITHUB_BASE_URL + "5.jpg"
-            },
-            {
-                q: "Quelle est la règle correcte concernant le port de la blouse de laboratoire ? 🥼",
-                options: ["Elle peut être ouverte en été", "Elle doit être lavée à domicile", "Elle doit être portée fermée et ne pas sortir du laboratoire", "Elle est facultative pour les calculs"],
-                correct: 2,
-                rationale: "La blouse protège l'opérateur et doit rester dans le laboratoire (fermée) pour éviter toute contamination externe.",
-                imageUrl: GITHUB_BASE_URL + "6.jpg"
-            },
-            {
-                q: "Est-il permis de travailler dans les laboratoires en écoutant de la musique avec un casque audio ? 🎧",
-                options: ["Oui, à volume bas", "Non, c'est formellement interdit", "Oui, avec un seul écouteur", "Uniquement le soir"],
-                correct: 1,
-                rationale: "L'isolation sonore empêche d'entendre les alarmes, les signaux de danger ou les appels à l'aide.",
-                imageUrl: GITHUB_BASE_URL + "7.jpg"
-            },
-            {
-                q: "Comment doit-on procéder pour transférer un liquide à l'aide d'une pipette ? 🧪",
-                options: ["Aspirer à la bouche", "Utiliser son doigt pour boucher", "Verser directement au goulot", "Utiliser des systèmes mécaniques"],
-                correct: 3,
-                rationale: "Le pipetage à la bouche est strictement interdit ; il faut toujours utiliser une poire ou un système mécanique (propipette).",
-                imageUrl: GITHUB_BASE_URL + "8.jpg"
-            },
-            {
-                q: "Quel est le premier contrôle obligatoire avant l'achat d'un produit CMR (Cancérogène, Mutagène, Reprotoxique) ? ☠️",
-                options: ["Acheter des masques", "Vérifier la place au frigo", "Vérifier la possibilité de substitution", "Avoir l'accord du médecin"],
-                correct: 2,
-                rationale: "Le principe fondamental de prévention est de chercher à substituer un produit dangereux par un produit moins nocif.",
-                imageUrl: GITHUB_BASE_URL + "9.jpg"
-            },
-            {
-                q: "Où doivent être rangés les solvants, acides et bases lorsqu'ils ne servent pas ? 🗄️",
-                options: ["Sous la hotte en permanence", "Dans des armoires de sécurité spécifiques", "Sur les étagères hautes", "Dans un placard classique"],
-                correct: 1,
-                rationale: "Ils doivent être isolés dans des armoires ventilées ou dans la soute extérieure pour prévenir les réactions incompatibles.",
-                imageUrl: GITHUB_BASE_URL + "10.jpg"
-            },
-            {
-                q: "Que faire d'une bouteille de produit chimique tout juste vidée pour le logiciel Quartzy ? 🍾",
-                options: ["La rincer et la jeter", "L'évaporer sous hotte", "La mettre dans les bacs de sortie gris", "La donner au directeur"],
-                correct: 2,
-                rationale: "Placer le flacon vide dans les bacs de sortie permet au gestionnaire de mettre à jour la base de données de l'inventaire.",
-                imageUrl: GITHUB_BASE_URL + "11.jpg"
-            },
-            {
-                q: "Lequel de ces risques N'EST PAS associé à l'azote liquide (produit cryogénique) ? ❄️",
-                options: ["Anoxie (asphyxie)", "Brûlures", "Explosion (pression)", "Rayonnements ionisants"],
-                correct: 3,
-                rationale: "Les fluides cryogéniques génèrent du froid extrême, un risque d'asphyxie et de surpression, mais pas de rayonnements nucléaires.",
-                imageUrl: GITHUB_BASE_URL + "12.jpg"
-            },
-            {
-                q: "Combien de types de bidons existe-t-il sous les hottes pour l'élimination des déchets liquides ? 🛢️",
-                options: ["Un bidon universel", "Deux (Aqueux et Organiques)", "Cinq (acides, bases, solvants halogénés, solvants non halogénés, liquides biologiques)", "Quatre (acides, bases, solvant, eau pure)"],
-                correct: 2,
-                rationale: "Une séparation stricte en 3 catégories (acides, bases, solvants) est requise pour éviter les réactions dangereuses.",
-                imageUrl: GITHUB_BASE_URL + "13.jpg"
-            },
-            {
-                q: "Est-il permis de jeter des solvants dans l'évier s'ils sont dilués avec beaucoup d'eau ? 🚰",
-                options: ["Oui", "Non, c'est formellement interdit", "Uniquement l'éthanol", "Seulement le vendredi"],
-                correct: 1,
-                rationale: "Aucun solvant, produit inflammable, toxique ou malodorant ne doit être jeté à l'évier, quelle que soit la dilution.",
-                imageUrl: GITHUB_BASE_URL + "14.jpg"
-            },
-            {
-                q: "Dans quel contenant éliminer les DASRI (déchets à risques infectieux/biologiques) ? ☣️",
-                options: ["Poubelle classique", "Fût en carton 'Déchets Chimiques'", "Poubelles ou cartons jaunes (Risque Bio)", "Bac gris"],
-                correct: 2,
-                rationale: "Les DASRI doivent obligatoirement suivre la filière spécifique caractérisée par les contenants jaunes avec le pictogramme de risque biologique.",
-                imageUrl: GITHUB_BASE_URL + "15.jpg"
-            },
-            {
-                q: "Où doit-on jeter la verrerie cassée ou les petits flacons en verre vides (après Quartzy) ? 🗑️",
-                options: ["Fûts en carton rigide étiquetés 'Verre'", "Poubelle normale", "Bac de recyclage du verre ménager dans la rue", "Sacs plastiques sous la hotte"],
-                correct: 0,
-                rationale: "La verrerie de labo va dans des fûts cartonnés rigides (salle des balances) pour éviter tout risque de coupure du personnel d'entretien.",
-                imageUrl: GITHUB_BASE_URL + "16.jpg"
-            },
-            {
-                q: "Que signifie un panneau de signalisation triangulaire avec un symbole noir sur fond jaune ? ⚠️",
-                options: ["Obligation stricte", "Danger proche ou imminent", "Premiers secours", "Interdiction d'entrer"],
-                correct: 1,
-                rationale: "Le triangle jaune avertit d'un danger ou d'un risque spécifique (chimique, électrique, chute...).",
-                imageUrl: GITHUB_BASE_URL + "17.jpg"
-            },
-            {
-                q: "Dans quel délai maximum un accident du travail doit-il être déclaré à l'employeur ? ⏱️",
-                options: ["24 heures", "48 heures", "7 jours", "Avant la fin du mois"],
-                correct: 1,
-                rationale: "La déclaration doit être effectuée dans les 48h via le formulaire approprié pour la prise en charge.",
-                imageUrl: GITHUB_BASE_URL + "18.jpg"
-            },
-            {
-                q: "Un chercheur peut-il réaliser des expériences seul dans le laboratoire hors horaires ? 🧑‍🔬",
-                options: ["Oui, s'il a prévenu", "Oui, avec des produits non toxiques", "Non, c'est strictement interdit", "Oui, s'il est titulaire"],
-                correct: 2,
-                rationale: "Il est formellement interdit de travailler seul, en dehors des horaires ou pendant les fermetures, pour garantir des secours rapides en cas de malaise.",
-                imageUrl: GITHUB_BASE_URL + "19.jpg"
-            },
-            {
-                q: "Quand la visite médicale de prévention doit-elle être effectuée ? 🩺",
-                options: ["À la fin du contrat", "Avant la première exposition aux risques", "Au bout d'un an", "Seulement en cas de maladie"],
-                correct: 1,
-                rationale: "Elle vérifie l'aptitude médicale au poste de travail AVANT toute mise en danger de l'agent.",
-                imageUrl: GITHUB_BASE_URL + "20.jpg"
-            },
-            {
-                q: "Que signifie un panneau rond avec un pictogramme blanc sur fond bleu ? 🔵",
-                options: ["Danger extrême", "Port obligatoire d'un EPI", "Sortie de secours", "Matériel d'incendie"],
-                correct: 1,
-                rationale: "Le rond bleu indique une action obligatoire, comme le port de lunettes, de gants ou de blouse (Équipement de Protection Individuelle).",
-                imageUrl: GITHUB_BASE_URL + "21.jpg"
-            },
-            {
-                q: "Que faire si vous constatez un dysfonctionnement matériel sans gravité immédiate ? 📝",
-                options: ["Le réparer soi-même", "Ne rien dire", "Annoter le registre d'Hygiène et Sécurité (GPuC)", "Déclencher l'alarme incendie"],
-                correct: 2,
-                rationale: "Le registre permet d'assurer une traçabilité et une réparation appropriée par les services techniques.",
-                imageUrl: GITHUB_BASE_URL + "22.jpg"
-            },
-            {
-                q: "Quelle tenue vestimentaire est fortement déconseillée ou interdite en laboratoire ? 👗",
-                options: ["Pantalon en coton", "Vêtements synthétiques, amples et chaussures ouvertes", "Chaussures de sécurité", "T-shirt sous la blouse"],
-                correct: 1,
-                rationale: "Les matières synthétiques fondent sur la peau en cas de feu. Les vêtements amples accrochent la verrerie, et les chaussures ouvertes n'offrent aucune protection contre les déversements.",
-                imageUrl: GITHUB_BASE_URL + "23.jpg"
-            },
-            {
-                q: "Que devez-vous faire systématiquement après avoir retiré vos gants de laboratoire ? 🧼",
-                options: ["Se laver soigneusement les mains", "Les mettre dans la poche", "Passer du gel hydroalcoolique", "Essuyer ses mains sur la blouse"],
-                correct: 0,
-                rationale: "Le lavage des mains à l'eau et au savon est obligatoire pour éliminer les micro-contaminations qui passent au travers de la porosité des gants.",
-                imageUrl: GITHUB_BASE_URL + "24.jpg"
-            },
-            {
-                q: "Quelle précaution spécifique s'applique à l'utilisation des objets collectifs (poignées, téléphone) ? 🚪",
-                options: ["Les désinfecter à l'acide", "Ne pas les toucher avec des gants contaminés", "Ne pas les utiliser du tout", "Mettre une double paire de gants"],
-                correct: 1,
-                rationale: "Toucher les parties communes avec des gants de laboratoire propage la contamination chimique ou biologique à l'ensemble du bâtiment.",
-                imageUrl: GITHUB_BASE_URL + "25.jpg"
-            },
-            {
-                q: "Avant toute manipulation dans le Laboratoire L2, quelle démarche est impérative ? 🧫",
-                options: ["Remplir le registre", "Faire une demande d'autorisation à I. Gosselin", "Mettre deux blouses", "Éteindre la ventilation"],
-                correct: 1,
-                rationale: "L'accès au laboratoire de confinement niveau 2 (L2) est restreint et nécessite une autorisation explicite de la responsable.",
-                imageUrl: GITHUB_BASE_URL + "26.jpg"
-            },
-            {
-                q: "Que doit-on porter obligatoirement lors de l'utilisation de bains à ultrasons ? 🎧",
-                options: ["Des lunettes de soleil", "Un masque à gaz", "Un casque anti-bruit", "Des gants en cuir"],
-                correct: 2,
-                rationale: "Les sondes et bains à ultrasons génèrent de hautes fréquences dangereuses pour l'audition.",
-                imageUrl: GITHUB_BASE_URL + "27.jpg"
-            },
-            {
-                q: "Quelle procédure s'applique aux équipements lourds (balances, PSM, sorbonnes) ? 🧽",
-                options: ["Nettoyer annuellement", "Nettoyer systématiquement après chaque usage", "Nettoyer par l'équipe de ménage", "Laisser en l'état"],
-                correct: 1,
-                rationale: "Le nettoyage immédiat après usage est fondamental pour la sécurité de l'utilisateur suivant et la préservation de l'équipement commun.",
-                imageUrl: GITHUB_BASE_URL + "28.jpg"
-            },
-            {
-                q: "Quel équipement est requis pour le transport de produits chimiques entre les étages ? 🧰",
-                options: ["À mains nues", "Dans les poches de la blouse", "Un contenant de transport (bac de sécurité)", "Un sac en plastique"],
-                correct: 2,
-                rationale: "Le contenant rigide prévient les bris de verre en cas de chute et contient le liquide en cas de fuite pendant le déplacement.",
-                imageUrl: GITHUB_BASE_URL + "29.jpg"
-            },
-            {
-                q: "Comment doit-on gérer une aiguille ou une seringue après son utilisation ? 💉",
-                options: ["Recapuchonner et jeter à la poubelle", "Jeter dans un évier", "Ne jamais recapuchonner, jeter dans un collecteur rigide pour piquants", "La plier en deux avant de la jeter"],
-                correct: 2,
-                rationale: "Recapuchonner est la première cause de piqûre accidentelle. Les piquants/tranchants vont directement dans les boîtes jaunes rigides dédiées.",
-                imageUrl: GITHUB_BASE_URL + "30.jpg"
-            },
-            {
-                q: "En cas de mission hors de l'agglomération amiénoise, quel document est obligatoire ? 🚆",
-                options: ["Une carte étudiante", "Un ordre de mission établi avant le départ", "Une autorisation verbale", "Un passeport"],
-                correct: 1,
-                rationale: "L'ordre de mission couvre l'agent sur le plan de l'assurance accident du travail pendant son déplacement professionnel.",
-                imageUrl: GITHUB_BASE_URL + "31.jpg"
-            },
-            {
-                q: "Que faut-il vérifier avant d'utiliser une bouteille de gaz sous pression ? 🌬️",
-                options: ["Si elle est esthétique", "Le chaînage sécurisé (aux 3/4) et l'intégrité du matériel", "Si elle roule bien sur le sol", "Si elle fait du bruit en la secouant"],
-                correct: 1,
-                rationale: "Une bouteille qui chute peut se transformer en projectile mortel (effet torpille) si la valve se brise. Le chaînage au 3/4 de la hauteur empêche son basculement.",
-                imageUrl: GITHUB_BASE_URL + "32.jpg"
-            },
-            {
-                q: "Quelle est la condition pour utiliser les autoclaves de stérilisation ? ⚙️",
-                options: ["Mettre des gants fins", "Être seul dans la pièce", "Posséder l'habilitation spécifique", "Avoir chaud"],
-                correct: 2,
-                rationale: "Les autoclaves opèrent sous haute pression et température, ils nécessitent une formation et une habilitation officielle pour prévenir les explosions et brûlures.",
-                imageUrl: GITHUB_BASE_URL + "33.jpg"
-            },
-            {
-                q: "Où devez-vous stocker vos effets personnels (sac à main, nourriture, manteau) ? 🎒",
-                options: ["Sur la paillasse", "Sous la hotte chimique", "Dans les zones de bureaux ou les casiers extérieurs", "À côté des déchets"],
-                correct: 2,
-                rationale: "Les effets personnels ne doivent jamais entrer dans la zone de manipulation (risque de contamination chimique et biologique).",
-                imageUrl: GITHUB_BASE_URL + "34.jpg"
-            },
-            {
-                q: "Lors d'un travail sur écran, quelle est la recommandation pour prévenir la fatigue ? 💻",
-                options: ["Interrompre le travail toutes les 2 heures", "Mettre la luminosité au maximum", "Travailler dans l'obscurité", "S'approcher à 10 cm de l'écran"],
-                correct: 0,
-                rationale: "Une pause visuelle et posturale régulière limite les Troubles Musculosquelettiques (TMS) et la fatigue oculaire.",
-                imageUrl: GITHUB_BASE_URL + "35.jpg"
-            },
-            {
-                q: "En fin de stage ou de contrat, quelle est votre obligation concernant votre espace ? 🧹",
-                options: ["Laisser en l'état pour le suivant", "Emporter les produits chimiques", "Ranger, nettoyer et éliminer ce qui n'est plus utile", "Tout jeter à la poubelle normale"],
-                correct: 2,
-                rationale: "Laisser un espace propre, avec des produits correctement identifiés ou éliminés selon les filières, est une obligation contractuelle et sécuritaire.",
-                imageUrl: GITHUB_BASE_URL + "36.jpg"
-            },
-            {
-                q: "Que doit-on faire lors d'une intervention sur une armoire électrique ? ⚡",
-                options: ["Couper l'eau", "Utiliser un tournevis en métal", "Ne jamais intervenir sans habilitation électrique", "Mettre des gants en latex"],
-                correct: 2,
-                rationale: "Seul le personnel formé et habilité électriquement peut ouvrir, réarmer ou manipuler des installations électriques de puissance.",
-                imageUrl: GITHUB_BASE_URL + "37.jpg"
-            },
-            {
-                q: "À quelle fréquence faut-il changer les gants lors de manipulation de produits bio dangereux ? 🧤",
-                options: ["Tous les jours", "Toutes les heures", "Toutes les 20 minutes", "Quand ils sont troués"],
-                correct: 2,
-                rationale: "La norme 374-2 préconise un changement toutes les 20 minutes car la porosité du matériau augmente rapidement avec la transpiration et la tension.",
-                imageUrl: GITHUB_BASE_URL + "38.jpg"
-            },
-            {
-                q: "Que faire en cas d'alarme évacuation pendant que vous manipulez sous hotte ? 🔔",
-                options: ["Continuer l'expérience", "Partir en courant en hurlant", "Abaisser la vitre, fermer gaz/électricité, et évacuer calmement", "Prendre les produits avec soi"],
-                correct: 2,
-                rationale: "La mise en sécurité de l'expérience est vitale avant de quitter la pièce pour ne pas déclencher un sur-accident (incendie, gaz toxique).",
-                imageUrl: GITHUB_BASE_URL + "39.jpg"
-            },
-            {
-                q: "Où doivent être jetés les vieux catalogues, cartons vides et papiers de bureau ? 📦",
-                options: ["Poubelle jaune DASRI", "Sous la paillasse", "Conteneurs de recyclage à l'extérieur rue Saint Leu", "À l'évier"],
-                correct: 2,
-                rationale: "Le tri sélectif classique (papier, carton propre) dispose de ses propres conteneurs urbains à l'extérieur du bâtiment scientifique.",
-                imageUrl: GITHUB_BASE_URL + "40.jpg"
-            }
+            // --- SECTION 1 : RÈGLES GÉNÉRALES & ACCÈS (8 Domande) ---
+            { section: "Règles Générales & Accès", q: "Quels sont les horaires d'ouverture prévus pour les locaux de l'UPJV du lundi au vendredi ? 🕒", options: ["De 8h00 à 18h00", "De 7h30 à 20h00", "De 7h30 à 19h45", "De 7h00 à 19h00"], correct: 1, rationale: "Le règlement stipule une plage d'ouverture fixe de 7h30 à 20h00 en semaine pour assurer l'accès sécurisé aux chercheurs.", imageUrl: GITHUB_BASE_URL + "1.jpg" },
+            { section: "Règles Générales & Accès", q: "Quelle tenue vestimentaire est fortement déconseillée ou interdite en laboratoire ? 👗", options: ["Pantalon en coton", "Vêtements synthétiques, amples et chaussures ouvertes", "Chaussures de sécurité", "T-shirt sous la blouse"], correct: 1, rationale: "Les matières synthétiques fondent sur la peau en cas de feu. Les vêtements amples accrochent la verrerie, et les chaussures ouvertes n'offrent aucune protection contre les déversements.", imageUrl: GITHUB_BASE_URL + "23.jpg" },
+            { section: "Règles Générales & Accès", q: "Quelle est la règle correcte concernant le port de la blouse de laboratoire ? 🥼", options: ["Elle peut être ouverte en été", "Elle doit être lavée à domicile", "Elle doit être portée fermée et ne pas sortir du laboratoire", "Elle est facultative pour les calculs"], correct: 2, rationale: "La blouse protège l'opérateur et doit rester dans le laboratoire (fermée) pour éviter toute contamination externe.", imageUrl: GITHUB_BASE_URL + "6.jpg" },
+            { section: "Règles Générales & Accès", q: "Est-il permis de travailler dans les laboratoires en écoutant de la musique avec un casque audio ? 🎧", options: ["Oui, à volume bas", "Non, c'est formellement interdit", "Oui, avec un seul écouteur", "Uniquement le soir"], correct: 1, rationale: "L'isolation sonore empêche d'entendre les alarmes, les signaux de danger ou les appels à l'aide.", imageUrl: GITHUB_BASE_URL + "7.jpg" },
+            { section: "Règles Générales & Accès", q: "Où devez-vous stocker vos effets personnels (sac à main, nourriture, manteau) ? 🎒", options: ["Sur la paillasse", "Sous la hotte chimique", "Dans les zones de bureaux ou les casiers extérieurs", "À côté des déchets"], correct: 2, rationale: "Les effets personnels ne doivent jamais entrer dans la zone de manipulation (risque de contamination chimique et biologique).", imageUrl: GITHUB_BASE_URL + "34.jpg" },
+            { section: "Règles Générales & Accès", q: "Quelle est la règle absolue concernant le travail isolé pour les personnels non permanents et les étudiants ? 👥", options: ["Ils peuvent travailler seuls la nuit s'ils en informent le chef", "Ils ne doivent jamais travailler seuls sans la présence d'au moins un membre permanent", "Ils sont autorisés à manipuler seuls uniquement le week-end", "Ils ne sont pas du tout autorisés à manipuler des produits chimiques"], correct: 1, rationale: "La presenza di personale strutturato è obbligatoria per garantire allarmi e soccorsi rapidi.", imageUrl: GITHUB_BASE_URL + "q24.jpg" },
+            { section: "Règles Générales & Accès", q: "Quand la visite médicale de prévention doit-elle être effectuée ? 🩺", options: ["À la fin du contrat", "Avant la première exposition aux risques", "Au bout d'un an", "Seulement en cas de maladie"], correct: 1, rationale: "Elle vérifie l'aptitude médicale au poste de travail AVANT toute mise en danger de l'agent.", imageUrl: GITHUB_BASE_URL + "20.jpg" },
+            { section: "Règles Générales & Accès", q: "En fin de stage ou de contrat, quelle est votre obligation concernant votre espace ? 🧹", options: ["Laisser en l'état pour le suivant", "Emporter les produits chimiques", "Ranger, nettoyer et éliminer ce qui n'est plus utile", "Tout jeter à la poubelle normale"], correct: 2, rationale: "Laisser un espace propre, avec des produits correctement identifiés ou éliminés selon les filières, est une obligation contractuelle et sécuritaire.", imageUrl: GITHUB_BASE_URL + "36.jpg" },
+
+            // --- SECTION 2 : URGENCES & INCIDENTS (6 Domande) ---
+            { section: "Urgences & Incidents", q: "Quelle est la procédure spécifique pour signaler un incendie ou un incident au PC Sécurité en dehors des heures ouvrables ? 🛑", options: ["Composer directement le numéro d'urgence national 18", "Contacter le PC Sécurité au 03 22 82 88 57 ou via le poste interne 88 57", "Utiliser le formulaire papier disponible dans le couloir", "Attendre l'arrivée du personnel permanent"], correct: 1, rationale: "Il est primordial d'alerter le PC sécurité interne qui coordonnera les secours externes.", imageUrl: GITHUB_BASE_URL + "2.jpg" },
+            { section: "Urgences & Incidents", q: "Que ne faut-il JAMAIS faire lors d'un appel à un numéro d'urgence (15, 18 ou 112) ? 📞", options: ["Indiquer l'étage", "Raccrocher en premier", "Donner son nom", "Décrire la victime"], correct: 1, rationale: "Les opérateurs d'urgence doivent toujours être les premiers à mettre fin à l'appel pour s'assurer d'avoir toutes les informations.", imageUrl: GITHUB_BASE_URL + "5.jpg" },
+            { section: "Urgences & Incidents", q: "Où se trouve le point de rassemblement désigné en cas d'évacuation du bâtiment ? 📍", options: ["Sur la pelouse entre les Poulies et le HUB de l'Energie", "Dans le parking souterrain", "Dans le hall principal au rez-de-chaussée", "Directement dans la rue Baudelocque"], correct: 0, rationale: "Ce point de rassemblement extérieur offre un espace sûr et balisé pour regrouper le personnel évacué.", imageUrl: GITHUB_BASE_URL + "3.jpg" },
+            { section: "Urgences & Incidents", q: "Que faire en cas d'alarme évacuation pendant que vous manipulez sous hotte ? 🔔", options: ["Continuer l'expérience", "Partir en courant en hurlant", "Abaisser la vitre, fermer gaz/électricité, et évacuer calmement", "Prendre les produits avec soi"], correct: 2, rationale: "La mise en sécurité de l'expérience est vitale avant de quitter la pièce pour ne pas déclencher un sur-accident.", imageUrl: GITHUB_BASE_URL + "39.jpg" },
+            { section: "Urgences & Incidents", q: "Quel type d'extincteur doit être utilisé pour les incendies impliquant des armoires électriques ? 🧯", options: ["Extincteur à Eau", "Extincteur à Poudre", "Extincteur à Mousse", "Extincteur à CO2"], correct: 3, rationale: "Le CO2 étouffe le feu sans endommager les circuits et ne conduit pas l'électricité.", imageUrl: GITHUB_BASE_URL + "4.jpg" },
+            { section: "Urgences & Incidents", q: "Dans quel délai maximum un accident du travail doit-il être déclaré à l'employeur ? ⏱️", options: ["24 heures", "48 heures", "7 jours", "Avant la fin du mois"], correct: 1, rationale: "La déclaration doit être effectuée dans les 48h via le formulaire approprié pour la prise en charge.", imageUrl: GITHUB_BASE_URL + "18.jpg" },
+
+            // --- SECTION 3 : MANIPULATION & ÉQUIPEMENT (8 Domande) ---
+            { section: "Manipulation & Équipement", q: "Comment doit-on procéder pour transférer un liquide à l'aide d'une pipette ? 🧪", options: ["Aspirer à la bouche", "Utiliser son doigt pour boucher", "Verser directement au goulot", "Utiliser des systèmes mécaniques"], correct: 3, rationale: "Le pipetage à la bouche est strictement interdit ; il faut toujours utiliser un système mécanique.", imageUrl: GITHUB_BASE_URL + "8.jpg" },
+            { section: "Manipulation & Équipement", q: "Où doivent être rangés les solvants, acides et bases lorsqu'ils ne servent pas ? 🗄️", options: ["Sous la hotte en permanence", "Dans des armoires de sécurité spécifiques", "Sur les étagères hautes", "Dans un placard classique"], correct: 1, rationale: "Ils doivent être isolés dans des armoires ventilées pour prévenir les réactions incompatibles.", imageUrl: GITHUB_BASE_URL + "10.jpg" },
+            { section: "Manipulation & Équipement", q: "Quel équipement est requis pour le transport de produits chimiques entre les étages ? 🧰", options: ["À mains nues", "Dans les poches de la blouse", "Un contenant de transport (bac de sécurité)", "Un sac en plastique"], correct: 2, rationale: "Le contenant rigide prévient les bris de verre en cas de chute et contient le liquide en cas de fuite.", imageUrl: GITHUB_BASE_URL + "29.jpg" },
+            { section: "Manipulation & Équipement", q: "Pour emprunter les escaliers avec des réactifs liquides, quel matériel est préconisé ? 🪣", options: ["Des plateaux lisses", "Tenir les flacons fermement", "Des seaux de transport munis d'une anse", "Les grandes poches"], correct: 2, rationale: "Les seaux de transport permettent de transporter les réactifs d'une seule main, sécurizzando la salita/discesa tenendosi al corrimano.", imageUrl: GITHUB_BASE_URL + "q23.jpg" },
+            { section: "Manipulation & Équipement", q: "Quelle procédure s'applique aux équipements lourds (balances, PSM, sorbonnes) ? 🧽", options: ["Nettoyer annuellement", "Nettoyer systématiquement après chaque usage", "Nettoyer par l'équipe de ménage", "Laisser en l'état"], correct: 1, rationale: "Le nettoyage immédiat après usage est fondamental pour la sécurité de l'utilisateur suivant.", imageUrl: GITHUB_BASE_URL + "28.jpg" },
+            { section: "Manipulation & Équipement", q: "Quel est le premier contrôle obligatoire avant l'achat d'un produit CMR ? ☠️", options: ["Acheter des masques", "Vérifier la place au frigo", "Vérifier la possibilité de substitution", "Avoir l'accord du médecin"], correct: 2, rationale: "Le principe fondamental de prévention est de chercher à substituer un produit dangereux par un produit moins nocif.", imageUrl: GITHUB_BASE_URL + "9.jpg" },
+            { section: "Manipulation & Équipement", q: "Que devez-vous faire systématiquement après avoir retiré vos gants de laboratoire ? 🧼", options: ["Se laver soigneusement les mains", "Les mettre dans la poche", "Passer du gel hydroalcoolique", "Essuyer ses mains"], correct: 0, rationale: "Il lavaggio delle mani con acqua e sapone elimina le micro-contaminazioni che passano attraverso la porosità dei guanti.", imageUrl: GITHUB_BASE_URL + "24.jpg" },
+            { section: "Manipulation & Équipement", q: "Quelle précaution spécifique s'applique à l'utilisation des objets collectifs (poignées, téléphone) ? 🚪", options: ["Les désinfecter à l'acide", "Ne pas les toucher avec des gants contaminés", "Ne pas les utiliser du tout", "Mettre une double paire"], correct: 1, rationale: "Toccare le parti comuni con guanti contaminati propaga il rischio a tutto l'edificio.", imageUrl: GITHUB_BASE_URL + "25.jpg" },
+
+            // --- SECTION 4 : GESTION DES DÉCHETS (14 Domande) ---
+            { section: "Gestion des Déchets", q: "Dans notre laboratoire, quelles catégories de déchets liquides avons-nous choisi d'utiliser ? 🧪", options: ["Acides, bases, halogénés, non halogénés et biologiques", "Uniquement aqueux et organiques", "Acides et inflammables", "Une seule poubelle"], correct: 0, rationale: "Pour s'adapter à nos activités tout en respectant les normes, nous utilisons ces 5 grands types de déchets liquides.", imageUrl: GITHUB_BASE_URL + "q1.jpg" },
+            { section: "Gestion des Déchets", q: "Que faire d'une bouteille de produit chimique tout juste vidée (pour Quartzy) ? 🍾", options: ["La rincer et jeter", "L'évaporer", "La mettre dans les bacs de sortie gris", "Donner au directeur"], correct: 2, rationale: "Placer le flacon vide dans les bacs de sortie permet au gestionnaire de mettre à jour l'inventaire.", imageUrl: GITHUB_BASE_URL + "11.jpg" },
+            { section: "Gestion des Déchets", q: "Est-il permis de jeter des solvants dans l'évier s'ils sont dilués ? 🚰", options: ["Oui", "Non, c'est formellement interdit", "Uniquement l'éthanol", "Seulement le vendredi"], correct: 1, rationale: "Aucun solvant, toxique ou malodorant ne doit être jeté à l'évier, quelle que soit la dilution.", imageUrl: GITHUB_BASE_URL + "14.jpg" },
+            { section: "Gestion des Déchets", q: "Pourquoi ne faut-il JAMAIS mélanger des acides forts et des bases fortes ? 💥", options: ["Effet inoffensif", "Odeur trompeuse", "Risque important d'éclaboussures corrosives suite à une réaction violente", "Solidification"], correct: 2, rationale: "La reazione acido-base forte è estremamente esotermica e provoca ebollizione e schizzi corrosivi.", imageUrl: GITHUB_BASE_URL + "q2.jpg" },
+            { section: "Gestion des Déchets", q: "Quel est le risque mortel si vous mélangez un acide avec de l'eau de Javel ? ☠️", options: ["Dégagement immédiat de chlore toxique", "Création de sel", "Dégagement d'oxygène inflammable", "Précipité insoluble"], correct: 0, rationale: "Le mélange d'un acide avec l'eau de Javel provoque un dégagement de gaz chlore (Cl2), extrêmement toxique.", imageUrl: GITHUB_BASE_URL + "q3.jpg" },
+            { section: "Gestion des Déchets", q: "Quel gaz extrêmement toxique est produit lors du mélange d'acides avec des cyanures ? ⚠️", options: ["CO", "Acide cyanhydrique (HCN)", "CO2", "N2O"], correct: 1, rationale: "Le contact d'un acide avec un cyanure libère instantanément de l'acide cyanhydrique (HCN), un gaz mortel.", imageUrl: GITHUB_BASE_URL + "q4.jpg" },
+            { section: "Gestion des Déchets", q: "Quel gaz toxique à l'odeur d'œuf pourri est généré par le mélange d'acides et de sulfures ? 🥚", options: ["Sulfure d'hydrogène (H2S)", "Dioxyde de soufre (SO2)", "Méthane (CH4)", "Ammoniac"], correct: 0, rationale: "Le sulfure d'hydrogène (H2S) est un gaz hautement toxique dégagé si des sulfures rencontrent un acide.", imageUrl: GITHUB_BASE_URL + "q5.jpg" },
+            { section: "Gestion des Déchets", q: "Dans quel bidon de collecte devez-vous obligatoirement jeter le dichlorométhane ? 🛢️", options: ["Non halogénés", "Biologiques", "Solvants organiques halogénés", "Acides"], correct: 2, rationale: "I solventi con atomi di alogeno (cloro, bromo, fluoro) richiedono un incenerimento speciale ad altissima temperatura.", imageUrl: GITHUB_BASE_URL + "q6.jpg" },
+            { section: "Gestion des Déchets", q: "Dans quel conteneur devez-vous éliminer l'acétone ou l'éthanol ? 🧴", options: ["Halogénés", "Solvants organiques non halogénés", "Bases", "Biologiques"], correct: 1, rationale: "L'acetone e l'etanolo sono solventi infiammabili ma non contengono alogeni.", imageUrl: GITHUB_BASE_URL + "q7.jpg" },
+            { section: "Gestion des Déchets", q: "Pourquoi ne doit-on jamais jeter ensemble oxydants (nitrates) et solvants organiques ? 🔥", options: ["Mauvaise odeur", "Faussent le tri", "Pour éviter incendies spontanés et explosions", "Gèlent"], correct: 2, rationale: "Mescolare un comburente forte (ossidante) con un combustibile (solvente) crea un cocktail esplosivo.", imageUrl: GITHUB_BASE_URL + "q8.jpg" },
+            { section: "Gestion des Déchets", q: "Quel phénomène dangereux les éthers développent-ils en vieillissant ? 💥", options: ["Deviennent acides", "Bouchent les flacons", "Forment des peroxydes très explosifs", "Deviennent radioactifs"], correct: 2, rationale: "Gli eteri, esposti all'aria/luce, formano perossidi instabili che possono esplodere per semplice urto o attrito.", imageUrl: GITHUB_BASE_URL + "q10.jpg" },
+            { section: "Gestion des Déchets", q: "Où doivent être strictement jetés les scalpels, lames et aiguilles usagées ? 💉", options: ["Poubelle jaune souple", "Conteneurs rigides dédiés aux objets piquants/tranchants", "Poubelle ménagère", "Fût solvant"], correct: 1, rationale: "Per evitare di ferire gravemente il personale di pulizia, questi oggetti vanno nei contenitori gialli di plastica rigida (non perforabili).", imageUrl: GITHUB_BASE_URL + "q9.jpg" },
+            { section: "Gestion des Déchets", q: "Où doit-on jeter la verrerie cassée ? 🗑️", options: ["Fûts en carton rigide étiquetés 'Verre'", "Poubelle normale", "Bac recyclage rue", "Sacs plastiques"], correct: 0, rationale: "La vetreria di laboratorio va in fusti di cartone rigido dedicati per evitare tagli.", imageUrl: GITHUB_BASE_URL + "16.jpg" },
+            { section: "Gestion des Déchets", q: "Dans quel contenant éliminer les déchets biologiques (DASRI) ? ☣️", options: ["Poubelle classique", "Fût carton Chimie", "Poubelles ou cartons jaunes (Risque Bio)", "Bac gris"], correct: 2, rationale: "I DASRI seguono obbligatoriamente la filiera indicata dai contenitori gialli con logo rischio biologico.", imageUrl: GITHUB_BASE_URL + "15.jpg" },
+
+            // --- SECTION 5 : RISQUES SPÉCIFIQUES (9 Domande) ---
+            { section: "Risques Spécifiques", q: "En microbiologie L1, qui doit particulièrement se méfier des infections opportunistes ? 🦠", options: ["Vaccinés", "Sportifs", "Les personnes immunodéprimées", "Jeunes chercheurs"], correct: 2, rationale: "Sebbene il rischio L1 sia basso, le persone con difese immunitarie abbassate sono vulnerabili.", imageUrl: GITHUB_BASE_URL + "q13.jpg" },
+            { section: "Risques Spécifiques", q: "Avant toute manipulation dans le Laboratoire L2, quelle démarche est impérative ? 🧫", options: ["Remplir registre", "Faire une demande d'autorisation à I. Gosselin", "Deux blouses", "Éteindre ventilation"], correct: 1, rationale: "L'accès au L2 est restreint et nécessite une autorisation explicite de la responsable.", imageUrl: GITHUB_BASE_URL + "26.jpg" },
+            { section: "Risques Spécifiques", q: "Pourquoi est-il strictement interdit de chauffer un récipient en verre hermétiquement fermé ? 🌡️", options: ["Le verre fond", "Empêche évaporation", "Pour éviter l'explosion violente sous l'effet de la surpression", "Altère réactif"], correct: 2, rationale: "I gas non potendo uscire fanno aumentare la pressione fino a far esplodere il vetro come una granata.", imageUrl: GITHUB_BASE_URL + "q12.jpg" },
+            { section: "Risques Spécifiques", q: "Lequel de ces risques N'EST PAS associé à l'azote liquide ? ❄️", options: ["Anoxie", "Brûlures", "Explosion", "Rayonnements ionisants"], correct: 3, rationale: "I fluidi criogenici generano freddo estremo, rischio di asfissia e sovrappressione, ma non radiazioni nucleari.", imageUrl: GITHUB_BASE_URL + "12.jpg" },
+            { section: "Risques Spécifiques", q: "Que faut-il vérifier avant d'utiliser une bouteille de gaz sous pression ? 🌬️", options: ["Esthétique", "Le chaînage sécurisé et l'intégrité du matériel", "Roule bien", "Bruit en secouant"], correct: 1, rationale: "Una bombola che cade può trasformarsi in un proiettile mortale se la valvola si rompe. Il fissaggio con catena a 3/4 è vitale.", imageUrl: GITHUB_BASE_URL + "32.jpg" },
+            { section: "Risques Spécifiques", q: "Quelle est la condition pour utiliser les autoclaves de stérilisation ? ⚙️", options: ["Gants fins", "Être seul", "Posséder l'habilitation spécifique", "Avoir chaud"], correct: 2, rationale: "Operando sotto alta pressione e temperatura, necessitano di una formazione e abilitazione ufficiale.", imageUrl: GITHUB_BASE_URL + "33.jpg" },
+            { section: "Risques Spécifiques", q: "En salle RMN, pour quelles personnes l'accès est-il strictement interdit ? 🧲", options: ["Lunettes", "Femmes enceintes et porteurs de pacemakers ou prothèses métalliques", "Amalgames dentaires", "Sans blouse bleue"], correct: 1, rationale: "I campi magnetici intensi possono alterare i pacemaker, spostare protesi ferromagnetiche o presentare rischi per il feto.", imageUrl: GITHUB_BASE_URL + "q16.jpg" },
+            { section: "Risques Spécifiques", q: "En cas de quenching RMN (vapeurs s'échappant rapidement), que faire immédiatement ? 🏃", options: ["Chercher la fuite", "Attendre dissipation", "Sortir immédiatement de la pièce pour éviter l'asphyxie", "Extincteur"], correct: 2, rationale: "L'anossia (mancanza di ossigeno) è fulminea, asintomatica all'inizio e causa rapida perdita di coscienza.", imageUrl: GITHUB_BASE_URL + "q18.jpg" },
+            { section: "Risques Spécifiques", q: "Que doit-on porter obligatoirement lors de l'utilisation de bains à ultrasons ? 🎧", options: ["Lunettes de soleil", "Masque", "Un casque anti-bruit", "Gants en cuir"], correct: 2, rationale: "Gli ultrasuoni generano alte frequenze molto pericolose e subdole per l'udito.", imageUrl: GITHUB_BASE_URL + "27.jpg" },
+
+            // --- SECTION 6 : ERGONOMIE & RISQUES PSYCHOSOCIAUX (5 Domande) ---
+            { section: "Ergonomie & RPS", q: "Lors d'un travail sur écran, quelle est la recommandation pour prévenir la fatigue ? 💻", options: ["Interrompre le travail toutes les 2 heures", "Luminosité maximum", "Travailler dans l'obscurité", "S'approcher à 10 cm"], correct: 0, rationale: "Una pausa visiva e posturale regolare limita i Disturbi Muscoloscheletrici e l'affaticamento oculare.", imageUrl: GITHUB_BASE_URL + "35.jpg" },
+            { section: "Ergonomie & RPS", q: "Comment prévient-on les troubles musculo-squelettiques (TMS) lors du transport de charges lourdes ? 🛒", options: ["À deux à mains nues", "En utilisant systématiquement des chariots de transport adaptés", "Faire glisser", "S'étirer après"], correct: 1, rationale: "L'uso di carrelli è l'unico metodo sicuro per preservare la schiena ed evitare cadute di materiali pericolosi.", imageUrl: GITHUB_BASE_URL + "q22.jpg" },
+            { section: "Ergonomie & RPS", q: "Dans le cadre de la santé mentale, par quoi se caractérise souvent l'épuisement émotionnel ? 📉", options: ["Bruit", "Le sentiment que le travail acharné n'est pas reconnu ni valorisé par la hiérarchie", "Difficulté technique", "Manque de publications"], correct: 1, rationale: "L'assenza cronica di riconoscimento degli sforzi è un innesco primario di stress psicologico.", imageUrl: GITHUB_BASE_URL + "q27.jpg" },
+            { section: "Ergonomie & RPS", q: "Quelle pratique managériale le document recommande-t-il vivement aux supérieurs ? 🌟", options: ["Souligner les défauts", "Ignorer les erreurs", "Privilégier la mise en valeur des qualités et réussites des personnes encadrées", "Discipline de fer"], correct: 2, rationale: "Valorizzare gli atout di un ricercatore è un approccio molto più stimolante e sano per la dinamica di gruppo.", imageUrl: GITHUB_BASE_URL + "q28.jpg" },
+            { section: "Ergonomie & RPS", q: "Des divisions peuvent émerger (visions/cultures). Que préconise le document ? 🤝", options: ["Isolement", "Transfert hiérarchique", "Privilégier la discussion respectueuse en voyant la diversité comme une richesse", "Imposer sa vision"], correct: 2, rationale: "Affrontare le divergenze con rispetto, ascolto e apertura mentale trasforma un conflitto in collaborazione.", imageUrl: GITHUB_BASE_URL + "q30.jpg" }
         ];
 
         let currentQIndex = 0;
-        let score = 0;
-        let isAnswered = false;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let sectionsSummary = [];
 
+        // Inizializza raggruppando i dati per sezione
+        function initSectionsData() {
+            sectionsSummary = [];
+            quizData.forEach((q, index) => {
+                let sec = sectionsSummary.find(s => s.name === q.section);
+                if (!sec) {
+                    sec = { name: q.section, startIndex: index, total: 0, answered: 0, correct: 0 };
+                    sectionsSummary.push(sec);
+                }
+                sec.total++;
+            });
+        }
+
+        // Calcola i punteggi in tempo reale
+        function updateSectionScores() {
+            sectionsSummary.forEach(sec => {
+                sec.answered = 0;
+                sec.correct = 0;
+            });
+            
+            quizData.forEach((q, index) => {
+                let sec = sectionsSummary.find(s => s.name === q.section);
+                if (userAnswers[index]) {
+                    sec.answered++;
+                    if (userAnswers[index].isCorrect) sec.correct++;
+                }
+            });
+        }
+
+        // Renderizza la dashboard (le "card" delle sezioni sulla home)
+        function renderDashboard() {
+            updateSectionScores();
+            const container = document.getElementById('section-cards-container');
+            container.innerHTML = '';
+            
+            // Icone dinamiche in base alla sezione
+            const icons = {
+                "Règles Générales & Accès": "fa-clipboard-check",
+                "Urgences & Incidents": "fa-fire-extinguisher",
+                "Manipulation & Équipement": "fa-vial-virus",
+                "Gestion des Déchets": "fa-trash-can",
+                "Risques Spécifiques": "fa-biohazard",
+                "Ergonomie & RPS": "fa-brain"
+            };
+
+            sectionsSummary.forEach(sec => {
+                const isCompleted = sec.answered === sec.total;
+                const icon = icons[sec.name] || "fa-book";
+                
+                const card = document.createElement('div');
+                card.className = `section-card bg-white p-4 rounded-xl border border-slate-200 cursor-pointer relative overflow-hidden flex flex-col justify-between h-full ${isCompleted ? 'bg-slate-50 opacity-80' : ''}`;
+                card.onclick = () => startQuiz(sec.startIndex);
+                
+                // Barra progresso interna alla card
+                const progressPct = (sec.answered / sec.total) * 100;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3 relative z-10">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold ${isCompleted ? 'text-green-600' : 'text-slate-400'} uppercase">
+                                ${sec.answered} / ${sec.total}
+                            </span>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-3 leading-snug relative z-10">${sec.name}</h4>
+                    
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mt-auto relative z-10">
+                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: ${progressPct}%"></div>
+                    </div>
+                    
+                    ${isCompleted ? '<div class="absolute -right-3 -top-3 text-5xl text-green-500 opacity-10"><i class="fa-solid fa-check-circle"></i></div>' : ''}
+                `;
+                container.appendChild(card);
+            });
+            
+            // Re-imposta l'immagine di default nel pannello di sinistra se siamo in home
+            document.getElementById('question-image').src = DEFAULT_IMAGE;
+            document.getElementById('image-container').classList.add('p-4');
+            document.getElementById('image-container').classList.remove('p-8');
+        }
+
+        // Randomizza le opzioni
         function shuffleOptions(question) {
             const optionsWithMeta = question.options.map((opt, index) => ({
                 text: opt,
+                originalIndex: index,
                 isCorrect: index === question.correct
             }));
             for (let i = optionsWithMeta.length - 1; i > 0; i--) {
@@ -438,115 +352,164 @@
             return optionsWithMeta;
         }
 
-        function startQuiz() {
+        // Aggiorna lo score globale visibile nell'header del quiz
+        function updateScoreDisplay() {
+            const currentScore = userAnswers.filter(ans => ans && ans.isCorrect).length;
+            document.getElementById('score-display').innerText = currentScore;
+        }
+
+        function startQuiz(startIndex = 0) {
+            currentQIndex = startIndex;
             document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
             document.getElementById('screen-quiz').classList.remove('hidden');
+            
+            // Riporta il layout a 2/5 e 3/5 nel caso fossimo nella schermata finale
+            document.getElementById('left-panel').classList.remove('hidden');
+            document.getElementById('right-panel').classList.remove('w-full');
+            document.getElementById('right-panel').classList.add('md:w-3/5');
+            
+            // Cambia padding contenitore immagine per adattarlo ai file grafici
+            document.getElementById('image-container').classList.remove('p-4');
+            document.getElementById('image-container').classList.add('p-8');
+
             loadQuestion();
         }
 
+        function returnHome() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-start').classList.remove('hidden');
+            
+            // Ripristina Layout Home
+            document.getElementById('left-panel').classList.remove('hidden');
+            document.getElementById('right-panel').classList.remove('w-full');
+            document.getElementById('right-panel').classList.add('md:w-3/5');
+            
+            renderDashboard();
+        }
+
         function loadQuestion() {
-            isAnswered = false;
             const qData = quizData[currentQIndex];
             
-            // Aggiornamenti UI Testuali
+            if (!qData.shuffledOptions) {
+                qData.shuffledOptions = shuffleOptions(qData);
+            }
+            const options = qData.shuffledOptions;
+            const previousAnswer = userAnswers[currentQIndex]; 
+
+            // Update Header
+            document.getElementById('section-indicator').innerText = qData.section;
             document.getElementById('question-counter').innerText = `Question ${currentQIndex + 1} / ${quizData.length}`;
             document.getElementById('progress-bar').style.width = `${((currentQIndex) / quizData.length) * 100}%`;
             document.getElementById('question-text').innerText = qData.q;
-            document.getElementById('btn-next').classList.add('hidden');
-            document.getElementById('rationale-container').classList.add('hidden');
             
-            // Inserisci l'immagine da URL
+            // Gestione Pulsanti Navigazione
+            const prevBtn = document.getElementById('btn-prev');
+            const nextBtn = document.getElementById('btn-next');
+            
+            if (currentQIndex > 0) prevBtn.classList.remove('hidden');
+            else prevBtn.classList.add('hidden');
+
+            if (previousAnswer) {
+                document.getElementById('rationale-text').innerText = qData.rationale;
+                document.getElementById('rationale-container').classList.remove('hidden');
+                
+                nextBtn.classList.remove('hidden');
+                if (currentQIndex === quizData.length - 1) {
+                    nextBtn.innerHTML = 'Voir les résultats <i class="fa-solid fa-flag-checkered"></i>';
+                } else {
+                    nextBtn.innerHTML = 'Suivant <i class="fa-solid fa-angle-right"></i>';
+                }
+            } else {
+                document.getElementById('rationale-container').classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+            
+            // Aggiorna Immagine con animazione
             const imgEl = document.getElementById('question-image');
-            imgEl.src = qData.imageUrl;
-            
-            // Riattiva l'animazione di entrata per l'illustrazione
+            imgEl.src = qData.imageUrl || DEFAULT_IMAGE;
             imgEl.classList.remove('fade-in');
-            void imgEl.offsetWidth; 
+            void imgEl.offsetWidth; // trigger reflow
             imgEl.classList.add('fade-in');
 
-            // Renderizza le opzioni
-            const shuffled = shuffleOptions(qData);
+            // Renderizza Opzioni
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             
-            shuffled.forEach((opt, index) => {
+            options.forEach((opt, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-300 font-medium text-slate-700 relative overflow-hidden';
+                btn.className = 'option-btn w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-300 font-medium text-slate-700 relative overflow-hidden flex items-center gap-3 text-sm sm:text-base';
+                
+                let iconHTML = '';
+                if (previousAnswer) {
+                    btn.disabled = true; 
+                    btn.classList.remove('hover:border-blue-300');
+                    
+                    if (opt.isCorrect) {
+                        btn.classList.add('option-correct');
+                        iconHTML = '<div class="ml-auto text-lg"><i class="fa-solid fa-circle-check"></i></div>';
+                    } else if (index === previousAnswer.selectedIndex && !opt.isCorrect) {
+                        btn.classList.add('option-incorrect');
+                        iconHTML = '<div class="ml-auto text-lg"><i class="fa-solid fa-circle-xmark"></i></div>';
+                    } else {
+                        btn.classList.add('opacity-40');
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(index, opt.isCorrect);
+                }
+
                 btn.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-sm">
-                            ${String.fromCharCode(65 + index)}
-                        </div>
-                        <span>${opt.text}</span>
-                        <div class="icon-indicator ml-auto opacity-0 text-xl"></div>
+                    <div class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm">
+                        ${String.fromCharCode(65 + index)}
                     </div>
+                    <span class="flex-grow">${opt.text}</span>
+                    ${iconHTML}
                 `;
-                btn.onclick = () => selectAnswer(btn, opt.isCorrect, shuffled, qData.rationale);
                 container.appendChild(btn);
             });
+            
+            updateScoreDisplay();
         }
 
-        function selectAnswer(selectedBtn, isCorrect, allOptions, rationaleText) {
-            if (isAnswered) return;
-            isAnswered = true;
-
-            const buttons = document.querySelectorAll('.option-btn');
-            
-            if (isCorrect) {
-                score++;
-                document.getElementById('score-display').innerText = score;
-            }
-
-            buttons.forEach((btn, index) => {
-                btn.disabled = true;
-                btn.classList.remove('hover:border-blue-300');
-                
-                const indicator = btn.querySelector('.icon-indicator');
-                indicator.classList.remove('opacity-0');
-
-                if (allOptions[index].isCorrect) {
-                    btn.classList.add('option-correct');
-                    indicator.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-                } else if (btn === selectedBtn && !isCorrect) {
-                    btn.classList.add('option-incorrect');
-                    indicator.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
-                } else {
-                    btn.classList.add('opacity-50');
-                }
-            });
-
-            document.getElementById('rationale-text').innerText = rationaleText;
-            document.getElementById('rationale-container').classList.remove('hidden');
-            
-            const nextBtn = document.getElementById('btn-next');
-            if (currentQIndex === quizData.length - 1) {
-                nextBtn.innerHTML = 'Voir les résultats <i class="fa-solid fa-flag-checkered"></i>';
-            }
-            nextBtn.classList.remove('hidden');
+        function selectAnswer(selectedIndex, isCorrect) {
+            userAnswers[currentQIndex] = { isCorrect, selectedIndex };
+            loadQuestion();
         }
 
         function nextQuestion() {
-            currentQIndex++;
-            if (currentQIndex < quizData.length) {
+            if (currentQIndex < quizData.length - 1) {
+                currentQIndex++;
                 loadQuestion();
             } else {
                 showResults();
             }
         }
+        
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                currentQIndex--;
+                loadQuestion();
+            }
+        }
 
         function showResults() {
-            document.getElementById('screen-quiz').classList.add('hidden');
-            document.getElementById('image-container').classList.add('hidden');
+            updateSectionScores(); // Aggiorna statistiche finali
             
-            document.querySelector('.w-full.md\\:w-2\\/5').classList.add('hidden');
-            document.querySelector('.w-full.md\\:w-3\\/5').classList.remove('md:w-3/5');
-            document.querySelector('.w-full.md\\:w-3\\/5').classList.add('w-full');
+            document.getElementById('screen-quiz').classList.add('hidden');
+            
+            // Allarga il pannello di destra a tutto schermo nascondendo l'immagine
+            document.getElementById('left-panel').classList.add('hidden');
+            document.getElementById('right-panel').classList.remove('md:w-3/5');
+            document.getElementById('right-panel').classList.add('w-full');
 
             const endScreen = document.getElementById('screen-end');
             endScreen.classList.remove('hidden');
 
-            const percentage = Math.round((score / quizData.length) * 100);
+            const finalScore = userAnswers.filter(ans => ans && ans.isCorrect).length;
+            const percentage = Math.round((finalScore / quizData.length) * 100) || 0;
             
+            // Anima Cerchio
             setTimeout(() => {
                 const circle = document.getElementById('score-circle');
                 const offset = 251.2 - (251.2 * percentage) / 100;
@@ -557,36 +520,71 @@
                 else circle.classList.replace('text-blue-500', 'text-yellow-500');
             }, 100);
 
+            // Anima Testo Percentuale
             let currentNum = 0;
             const targetNum = percentage;
             const textEl = document.getElementById('final-score-text');
-            const interval = setInterval(() => {
-                if(currentNum >= targetNum) {
-                    clearInterval(interval);
-                    textEl.innerText = `${targetNum}%`;
-                } else {
-                    currentNum++;
-                    textEl.innerText = `${currentNum}%`;
-                }
-            }, 20);
+            if(targetNum > 0) {
+                const interval = setInterval(() => {
+                    if(currentNum >= targetNum) {
+                        clearInterval(interval);
+                        textEl.innerText = `${targetNum}%`;
+                    } else {
+                        currentNum++;
+                        textEl.innerText = `${currentNum}%`;
+                    }
+                }, 20);
+            } else {
+                textEl.innerText = `0%`;
+            }
 
             const titleEl = document.getElementById('final-title');
             const msgEl = document.getElementById('final-message');
             
             if (percentage >= 90) {
                 titleEl.innerText = "Excellent ! 🏆";
-                msgEl.innerText = `Vous avez obtenu ${score} sur ${quizData.length}. Vous maîtrisez parfaitement les règles de sécurité du laboratoire.`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Vous maîtrisez parfaitement les règles de sécurité.`;
             } else if (percentage >= 70) {
                 titleEl.innerText = "Très bien ! 👍";
-                msgEl.innerText = `Vous avez obtenu ${score} sur ${quizData.length}. Vous connaissez l'essentiel, mais une petite révision ne fait pas de mal.`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Vous connaissez l'essentiel.`;
             } else if (percentage >= 50) {
                 titleEl.innerText = "Passable ⚠️";
-                msgEl.innerText = `Vous avez obtenu ${score} sur ${quizData.length}. Il est fortement recommandé de relire le livret de sécurité.`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Une révision est recommandée.`;
             } else {
                 titleEl.innerText = "Attention 🛑";
-                msgEl.innerText = `Vous avez obtenu ${score} sur ${quizData.length}. Vos connaissances sont insuffisantes pour manipuler en toute sécurité. Une relecture approfondie du manuel est obligatoire.`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Vos connaissances sont insuffisantes pour manipuler en toute sécurité.`;
             }
+
+            // Inietta Breakdown delle Sezioni
+            const breakdownContainer = document.getElementById('results-breakdown-container');
+            breakdownContainer.innerHTML = '';
+            
+            sectionsSummary.forEach(sec => {
+                const secPct = sec.answered > 0 ? Math.round((sec.correct / sec.total) * 100) : 0;
+                let colorClass = 'bg-blue-500';
+                if(secPct >= 80) colorClass = 'bg-green-500';
+                else if(secPct < 50 && sec.answered > 0) colorClass = 'bg-red-500';
+                else if (sec.answered > 0) colorClass = 'bg-yellow-500';
+                else colorClass = 'bg-slate-300'; // Non risposto
+
+                breakdownContainer.innerHTML += `
+                    <div class="mb-3">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-xs font-bold text-slate-700">${sec.name}</span>
+                            <span class="text-xs font-semibold text-slate-500">${sec.correct}/${sec.total} pts (${secPct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                            <div class="${colorClass} h-2 rounded-full" style="width: ${secPct}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
         }
+
+        window.onload = () => {
+            initSectionsData();
+            renderDashboard();
+        };
     </script>
 </body>
 </html>
