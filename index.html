@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Prévention et Sécurité en Laboratoire - GEC UPJV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .option-btn, .section-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+            border-color: #93c5fd;
+        }
+        .option-correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #166534 !important;
+        }
+        .option-incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col">
+
+    <div class="flex-grow flex items-center justify-center p-4 sm:p-8">
+        <div class="w-full max-w-5xl glass-panel rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative">
+            
+            <!-- Lato Sinistro: Area Immagine Visiva -->
+            <div class="w-full md:w-2/5 bg-slate-50 border-r border-slate-200 flex flex-col items-center justify-center p-8 relative transition-all duration-500" id="left-panel">
+                <div class="absolute top-6 left-6 text-blue-600 font-bold text-xl flex items-center gap-2">
+                    <i class="fa-solid fa-flask"></i> GEC UPJV
+                </div>
+                
+                <div id="image-container" class="w-full aspect-square bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center overflow-hidden relative p-4">
+                    <img id="question-image" class="w-full h-full object-contain fade-in rounded-xl" src="https://raw.githubusercontent.com/nicola-damelio/quiz_hygiene_et_securite/main/images/labo.png" alt="Illustration du laboratoire">
+                </div>
+            </div>
+
+            <!-- Lato Destro: Area Contenuto (Quiz) -->
+            <div class="w-full md:w-3/5 p-6 sm:p-8 flex flex-col h-full max-h-[85vh] overflow-y-auto relative transition-all duration-500" id="right-panel">
+                
+                <div id="screen-start" class="flex flex-col fade-in pb-4">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Test de Prévention et Sécurité</h1>
+                        <p class="text-sm text-slate-500 mb-6 max-w-md mx-auto leading-relaxed">
+                            Évaluez vos connaissances sur les règles d'hygiène et de sécurité en laboratoire.
+                        </p>
+
+                        <!-- Input Nome Utente -->
+                        <div class="mb-6 max-w-sm mx-auto text-left">
+                            <label for="user-name" class="block text-sm font-semibold text-slate-700 mb-2">Votre Nom et Prénom <span class="text-red-500">*</span></label>
+                            <input type="text" id="user-name" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-800" placeholder="Ex: Jean Dupont">
+                            <p id="name-error" class="text-red-500 text-xs mt-2 hidden"><i class="fa-solid fa-triangle-exclamation"></i> Veuillez renseigner votre nom pour continuer.</p>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                            <button onclick="startQuiz(0)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2 text-md w-full max-w-sm">
+                                <i class="fa-solid fa-play"></i> Démarrer le Test Complet
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 border-t border-slate-200 pt-6">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-list-ul"></i> Ou choisissez une section
+                        </h3>
+                        <!-- Contenitore Griglia Sezioni -->
+                        <div id="section-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+                </div>
+
+                <div id="screen-quiz" class="flex-grow flex flex-col hidden fade-in">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex flex-col gap-1.5">
+                            <span id="section-indicator" class="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md w-max uppercase tracking-wider border border-blue-200">Section</span>
+                            <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider" id="question-counter">Question 1 / 50</span>
+                        </div>
+                        
+                        <div class="flex gap-3 items-center">
+                            <button onclick="returnHome()" class="text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                                <i class="fa-solid fa-house"></i> Accueil
+                            </button>
+                            <div class="flex gap-1 items-center h-max text-yellow-600 text-sm font-bold bg-yellow-50 px-3 py-1.5 rounded-full border border-yellow-200">
+                                <i class="fa-solid fa-star"></i> <span id="score-display">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full bg-slate-200 rounded-full h-1.5 mb-6 overflow-hidden">
+                        <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+
+                    <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 mb-6 leading-snug"></h2>
+
+                    <div id="options-container" class="space-y-2.5 flex-grow"></div>
+
+                    <div id="rationale-container" class="mt-5 p-4 bg-blue-50 border border-blue-100 rounded-xl hidden fade-in">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
+                            <p id="rationale-text" class="text-sm text-blue-900 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-between items-center pt-4 border-t border-slate-100">
+                        <button id="btn-prev" onclick="prevQuestion()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-5 rounded-xl transition-all flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-angle-left"></i> Précédent
+                        </button>
+                        <button id="btn-next" onclick="nextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 px-6 rounded-xl transition-all flex items-center gap-2 text-sm ml-auto shadow-md">
+                            Suivant <i class="fa-solid fa-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="screen-end" class="flex-grow flex flex-col items-center justify-start text-center hidden fade-in pb-8">
+                    <div class="relative w-32 h-32 mb-6 mt-4">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle class="text-slate-200 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
+                            <circle id="score-circle" class="text-blue-500 stroke-current transition-all duration-1000 ease-out" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center flex-col">
+                            <span id="final-score-text" class="text-3xl font-bold text-slate-800">0%</span>
+                        </div>
+                    </div>
+                    <h2 id="final-title" class="text-2xl font-bold text-slate-800 mb-2">Test Terminé !</h2>
+                    <p id="final-message" class="text-sm text-slate-500 mb-6 max-w-md mx-auto px-4"></p>
+                    
+                    <div class="w-full bg-white border border-slate-200 rounded-2xl p-5 mb-8 text-left shadow-sm">
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+                            <i class="fa-solid fa-chart-pie text-blue-500 mr-2"></i>Scores par Section
+                        </h3>
+                        <div id="results-breakdown-container" class="space-y-4"></div>
+                    </div>
+
+                    <!-- Bottoni Finali -->
+                    <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
+                        <button onclick="sendEmail()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-grow">
+                            <i class="fa-solid fa-envelope"></i> Envoyer les résultats
+                        </button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center mt-4">
+                        <button onclick="returnHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 flex-grow">
+                            <i class="fa-solid fa-bars"></i> Menu
+                        </button>
+                        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 flex-grow">
+                            <i class="fa-solid fa-rotate-right"></i> Recommencer
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_IMAGE = "https://raw.githubusercontent.com/nicola-damelio/quiz_hygiene_et_securite/main/images/labo.png";
+        const GITHUB_BASE_URL = "https://raw.githubusercontent.com/nicola-damelio/quiz_hygiene_et_securite/main/images/";
+
+        // L'array è stato snellito: la proprietà imageUrl è stata rimossa,
+        // in quanto calcolata dinamicamente (q1.jpg, q2.jpg, ecc.) in base all'indice.
+        const quizData = [
+            { section: "Règles Générales & Accès", q: "Quelles sont les plages horaires réglementaires d'ouverture des locaux de l'UPJV en semaine ?", options: ["De 08h00 à 18h00", "De 07h30 à 20h00", "De 07h00 à 19h00", "Accès permanent 24h/24"], correct: 1, rationale: "Le règlement intérieur de l'université stipule une plage d'ouverture stricte de 07h30 à 20h00 pour garantir l'accès sécurisé du personnel de recherche." },
+            { section: "Règles Générales & Accès", q: "Quel type d'habillement constitue un danger critique et est formellement proscrit en zone de manipulation ?", options: ["Les pantalons en fibres naturelles", "Les tissus synthétiques, vêtements amples et chaussures ouvertes", "Les chaussures de sécurité fermées", "Le port de T-shirts sous la blouse"], correct: 1, rationale: "Les polymères synthétiques fondent et adhèrent à la peau sous l'effet de la chaleur. Les chaussures ouvertes exposent l'épiderme aux déversements chimiques corrosifs." },
+            { section: "Règles Générales & Accès", q: "Quelle procédure régit le port des équipements de protection individuelle (EPI) comme la blouse ?", options: ["Elle peut être portée déboutonnée pour des raisons de confort thermique", "Elle doit être entretenue au domicile privé de l'agent", "Elle doit être portée obligatoirement fermée et retirée avant de quitter la zone technique", "Son port est laissé à l'appréciation de l'expérimentateur"], correct: 2, rationale: "La blouse est la première barrière de protection. Son maintien fermé empêche les projections corporelles, et son confinement au laboratoire évite la dissémination de contaminants." },
+            { section: "Règles Générales & Accès", q: "L'utilisation de dispositifs audio isolants (casques, écouteurs) est-elle tolérée durant les expérimentations ?", options: ["Autorisée sous réserve d'un volume modéré", "Strictement interdite en toute circonstance", "Tolérée si l'opérateur ne porte qu'un seul écouteur", "Autorisée exclusivement en dehors des heures d'affluence"], correct: 1, rationale: "L'isolation acoustique compromet gravement la sécurité en masquant les signaux d'alarme, les bruits d'incidents techniques ou les appels de détresse de collègues." },
+            { section: "Règles Générales & Accès", q: "Quel est le protocole de stockage pour les effets personnels non liés à la manipulation (sacs, denrées alimentaires) ?", options: ["Sur les plans de travail (paillasses) dégagés", "À l'intérieur des sorbonnes ventilées", "Dans des zones administratives ou casiers externes dédiés", "Dans les armoires de stockage de verrerie"], correct: 2, rationale: "L'introduction d'effets personnels en zone technique expose ces objets à une contamination chimique ou biologique aéroportée et contrevient aux normes d'hygiène de base." },
+            { section: "Règles Générales & Accès", q: "Quelle directive s'applique au travail isolé pour le personnel non-titulaire et les stagiaires ?", options: ["Autorisé moyennant une déclaration préalable au directeur d'unité", "Interdiction absolue sans la supervision directe d'un membre du personnel permanent", "Toléré pour les manipulations classées à faible risque", "Autorisé uniquement durant les heures de fermeture"], correct: 1, rationale: "Le cadre réglementaire exige la présence d'un agent statutaire pour assurer l'alerte et la coordination des secours en cas d'accident imprévu." },
+            { section: "Règles Générales & Accès", q: "À quel moment la visite médicale d'aptitude préventive doit-elle être programmée ?", options: ["À l'issue de la période d'essai", "Préalablement à toute affectation et exposition aux risques professionnels", "À la première constatation de symptômes cliniques", "Annuellement, indépendamment de la date de recrutement"], correct: 1, rationale: "La médecine de prévention doit valider l'aptitude physique et clinique de l'agent AVANT qu'il ne soit exposé aux agents chimiques, physiques ou biologiques du laboratoire." },
+            { section: "Règles Générales & Accès", q: "Quelles sont les obligations de l'agent concernant son poste de travail à l'issue de son contrat ou de son stage ?", options: ["Déléguer le nettoyage aux services d'entretien généraux", "Conserver les réactifs non utilisés à son domicile", "Décontaminer, trier les déchets et remettre un espace conforme et neutre", "Laisser les dispositifs expérimentaux en l'état pour les successeurs"], correct: 2, rationale: "Le protocole de départ inclut le nettoyage et l'élimination réglementaire des échantillons et produits, pour prévenir tout risque résiduel ou perte de traçabilité." },
+
+            { section: "Urgences & Incidents", q: "Quelle est la procédure d'alerte réglementaire en cas de sinistre survenu en dehors des heures de présence de l'encadrement ?", options: ["Contacter les services publics (18 ou 112) de sa propre initiative", "Alerter le Poste de Contrôle (PC) Sécurité interne au 03 22 82 88 57", "Rédiger un rapport d'incident sur le registre dédié et patienter", "Tenter de maîtriser le sinistre seul avant d'alerter"], correct: 1, rationale: "Le PC Sécurité de l'établissement est le pivot de l'alerte : il qualifie le risque, guide les secours externes et assure la logistique d'accès au bâtiment." },
+            { section: "Urgences & Incidents", q: "Quelle règle de communication s'impose impérativement lors d'un appel aux services de secours médicaux ou d'incendie ?", options: ["Exiger l'envoi immédiat de véhicules médicalisés", "Ne jamais rompre la communication avant que l'opérateur ne vous y invite", "Minimiser la situation pour éviter la panique", "Raccrocher rapidement pour libérer la ligne téléphonique"], correct: 1, rationale: "L'opérateur du centre de secours suit un algorithme décisionnel précis et doit valider qu'il détient toutes les données critiques avant de clore l'appel." },
+            { section: "Urgences & Incidents", q: "Quel emplacement géographique constitue le point de rassemblement officiel suite à une évacuation générale ?", options: ["L'esplanade engazonnée située entre le bâtiment des Poulies et le HUB de l'Energie", "Les niveaux inférieurs (parkings ou sous-sols)", "Le hall d'accueil principal du bâtiment", "Le trottoir de la voie publique adjacente (rue Baudelocque)"], correct: 0, rationale: "Ce secteur extérieur est identifié dans le plan de prévention comme étant à distance de sécurité suffisante des dégagements toxiques ou thermiques potentiels." },
+            { section: "Urgences & Incidents", q: "Quel est le comportement requis si une alarme générale retentit pendant une manipulation chimique complexe sous sorbonne ?", options: ["Poursuivre la réaction jusqu'à stabilisation thermodynamique", "Évacuer immédiatement sans aucune autre action", "Mettre l'installation en sécurité (fermeture des fluides, abaissement de la guillotine) avant d'évacuer", "Transporter les réactifs volatils avec soi vers l'extérieur"], correct: 2, rationale: "L'abandon d'une manipulation active peut générer un sinistre secondaire (sur-accident). Une mise en sécurité rapide (coupure d'énergie) est vitale." },
+            { section: "Urgences & Incidents", q: "Quel agent extincteur est spécifiquement préconisé pour combattre un départ de feu sur une armoire de distribution électrique ?", options: ["Extincteur à eau pulvérisée avec additif", "Extincteur à poudre polyvalente ABC", "Extincteur à mousse physique", "Extincteur au dioxyde de carbone (CO2)"], correct: 3, rationale: "Le CO2 agit par étouffement et refroidissement. Ses propriétés diélectriques garantissent l'absence de risque d'électrisation pour l'utilisateur, sans laisser de résidus destructeurs." },
+            { section: "Urgences & Incidents", q: "Quel est le délai légal de rigueur pour la déclaration administrative d'un accident du travail ou de trajet ?", options: ["24 heures ouvrées", "48 heures ouvrées", "7 jours calendaires", "Avant la clôture de l'exercice comptable mensuel"], correct: 1, rationale: "La législation impose à la victime (ou à ses représentants) d'informer l'employeur dans un délai de 48 heures pour permettre l'ouverture des droits à la prise en charge." },
+
+            { section: "Manipulation & Équipement", q: "Quel dispositif technique est obligatoire pour le prélèvement et le transfert de fluides chimiques liquides ?", options: ["L'aspiration buccale sous contrôle visuel", "L'utilisation de pipettes pasteur en verre obturées par voie digitale", "Le transvasement direct à flux libre", "L'utilisation systématique d'auxiliaires de pipetage (propipettes, micropipettes)"], correct: 3, rationale: "Le pipetage buccal est universellement prohibé en raison des risques mortels d'ingestion accidentelle et d'inhalation de vapeurs nocives." },
+            { section: "Manipulation & Équipement", q: "Où doivent être conditionnés les solvants volatils et les agents corrosifs en dehors de leur période d'utilisation ?", options: ["Stockés en permanence sous les flux laminaires ou sorbonnes", "Placés dans des armoires de sûreté ventilées et compartimentées", "Disposés sur des rayonnages supérieurs pour éviter les heurts", "Entreposés dans des zones de circulation communes"], correct: 1, rationale: "Les armoires de sécurité préviennent l'accumulation de vapeurs explosives ou toxiques et assurent la ségrégation des produits chimiquement incompatibles (acides/bases)." },
+            { section: "Manipulation & Équipement", q: "Quelle protection mécanique est imposée lors du transfert de conditionnements chimiques en verre entre différents locaux ?", options: ["Le transport manuel direct avec gants adaptés", "Le transport par chariot roulant métallique non compartimenté", "L'emploi d'un récipient de transport antichoc (nacelle ou bac de rétention)", "L'emballage dans des films plastiques hermétiques"], correct: 2, rationale: "Les bacs de transport absorbent l'énergie cinétique en cas de heurt, préviennent la rupture du conditionnement primaire et assurent une rétention totale en cas de fuite." },
+            { section: "Manipulation & Équipement", q: "Quelle consigne ergonomique et de sécurité régit l'utilisation des escaliers avec des réactifs dangereux ?", options: ["L'utilisation de plateaux de transport rigides", "Le maintien physique des flacons à deux mains contre le torse", "L'utilisation exclusive de seaux de transport dotés d'une anse robuste", "Le transport par plusieurs opérateurs en relais"], correct: 2, rationale: "Le seau de transport avec anse permet de confiner le risque chimique tout en libérant une main de l'opérateur, rendant possible l'utilisation indispensable de la main courante (rampe)." },
+            { section: "Manipulation & Équipement", q: "Quel protocole d'hygiène s'applique aux équipements d'usage mutualisé (balances analytiques, sorbonnes) ?", options: ["Une maintenance curative semestrielle", "Une décontamination opérée systématiquement par chaque utilisateur après usage", "Un nettoyage quotidien délégué à la société de prestation de propreté", "L'utilisation de films protecteurs jetables non renouvelés"], correct: 1, rationale: "La décontamination immédiate est de la responsabilité stricte de l'expérimentateur pour prévenir la contamination croisée ou l'exposition toxique de l'utilisateur suivant." },
+            { section: "Manipulation & Équipement", q: "Quelle est l'obligation réglementaire préalable à l'acquisition d'une substance classée CMR (Cancérogène, Mutagène, Reprotoxique) ?", options: ["L'aménagement d'une zone de stockage cryogénique", "L'obtention d'une habilitation de niveau 3", "L'analyse documentée de la faisabilité d'une substitution par un agent moins dangereux", "La déclaration systématique aux autorités sanitaires régionales"], correct: 2, rationale: "Le principe de substitution est la pierre angulaire de la directive européenne REACH concernant la prévention du risque chimique : l'élimination du danger prime sur la protection." },
+            { section: "Manipulation & Équipement", q: "Quelle action physiologique est impérative consécutivement au retrait des gants de protection en nitrile ou latex ?", options: ["Un lavage minutieux des mains à l'eau courante et au savon doux", "L'application d'une solution hydro-alcoolique à forte concentration", "Un séchage immédiat à l'air libre", "Une friction avec un solvant organique dilué"], correct: 0, rationale: "Les gants présentent toujours un degré de micro-porosité, accentué par la flexion. Le lavage au savon dissout le film lipidique cutané potentiellement contaminé." },
+            { section: "Manipulation & Équipement", q: "Quelle procédure s'applique à l'interaction avec des éléments d'infrastructure communs (poignées de porte, combinés téléphoniques) ?", options: ["La désinfection préalable avec un agent chloré", "L'interdiction absolue de les manipuler avec des gants ayant été exposés aux réactifs", "Leur manipulation avec des gants doublés", "L'utilisation de barrières physiques intermédiaires (papier absorbant)"], correct: 1, rationale: "Le contact avec des surfaces communes via des gants contaminés rompt le confinement du risque chimique, dispersant des agents toxiques hors de la zone de manipulation." },
+
+            { section: "Gestion des Déchets", q: "Selon le plan de gestion interne, quelles sont les filières principales de tri sélectif pour les effluents liquides ?", options: ["Solvants chlorés exclusifs", "Solutions aqueuses et solvants organiques indifférenciés", "Acides, bases, solvants halogénés, solvants non-halogénés et déchets biologiques", "Déchets radioactifs et déchets d'activité de soins (DASRI)"], correct: 2, rationale: "Cette classification permet de respecter les filières d'incinération spécifiques imposées par les prestataires de traitement et de prévenir les réactions exothermiques en fûts." },
+            { section: "Gestion des Déchets", q: "Quelle est la procédure administrative associée à l'élimination d'un flacon de réactif intégralement consommé ?", options: ["Son dépôt aux ordures ménagères après triple rinçage", "Son évaporation sous sorbonne jusqu'à siccité", "Son dépôt dans les bacs de collecte spécifiques (gris) pour la radiation de l'inventaire informatisé", "Son recyclage dans les conteneurs à verre urbains"], correct: 2, rationale: "Cette étape assure la traçabilité des stocks (via des logiciels comme Quartzy) et permet aux gestionnaires de maintenir l'évaluation du risque chimique du laboratoire à jour." },
+            { section: "Gestion des Déchets", q: "Les solvants organiques de catégorie 2, fortement dilués en phase aqueuse, sont-ils admis dans le réseau d'assainissement ?", options: ["Oui, sous réserve d'une dilution supérieure à 1/1000", "Non, le rejet de solvants et agents toxiques à l'évier est rigoureusement proscrit", "Uniquement les alcools primaires de faible masse molaire", "Autorisé en cas de saturation des bidons de collecte"], correct: 1, rationale: "Les stations d'épuration urbaines ne sont pas conçues pour traiter les xénobiotiques. Tout rejet pollue les milieux naturels et expose la responsabilité pénale de l'établissement." },
+            { section: "Gestion des Déchets", q: "Quelle conséquence thermodynamique redoute-t-on lors du mélange intempestif d'un acide fort et d'une base forte dans un même contenant ?", options: ["Une précipitation sous forme de sels insolubles sans danger", "Une polymérisation rapide provoquant la solidification", "Une réaction exothermique violente entraînant l'ébullition et la projection de fluides corrosifs", "Une dégagement gazeux inerte"], correct: 2, rationale: "La réaction de neutralisation libère une forte enthalpie. L'échauffement brutal vaporise le solvant, créant un phénomène de geyser d'un liquide extrêmement caustique." },
+            { section: "Gestion des Déchets", q: "Quel est le risque toxique majeur résultant du mélange d'une solution acide avec de l'hypochlorite de sodium (eau de Javel) ?", options: ["Le dégagement massif de dichlore (Cl2), un gaz hautement toxique et suffocant", "La formation de peroxyde d'hydrogène instable", "La libération de dioxygène sous haute pression", "La formation de cristaux de chlorure de sodium (sel)"], correct: 0, rationale: "L'acidification de l'eau de Javel déplace l'équilibre chimique et libère le chlore gazeux dissous, causant des œdèmes pulmonaires aigus en cas d'inhalation." },
+            { section: "Gestion des Déchets", q: "Quelle molécule gazeuse à toxicité létale foudroyante est produite lors de l'acidification de sels de cyanure ?", options: ["Le monoxyde de carbone (CO)", "Le dioxyde d'azote (NO2)", "Le phosgène (COCl2)", "Le cyanure d'hydrogène ou acide cyanhydrique (HCN)"], correct: 3, rationale: "Le cyanure d'hydrogène (HCN) inhibe la respiration cellulaire au niveau mitochondrial, entraînant une anoxie tissulaire mortelle en quelques minutes." },
+            { section: "Gestion des Déchets", q: "Quel gaz toxique, caractérisé par une odeur fétide, est synthétisé par l'action d'un acide sur des composés sulfurés ?", options: ["Le sulfure d'hydrogène (H2S)", "Le dioxyde de soufre (SO2)", "L'ammoniac (NH3)", "Le méthane (CH4)"], correct: 0, rationale: "Le H2S est un gaz neurotoxique. Bien qu'il sente l'œuf pourri à faible concentration, il paralyse rapidement le nerf olfactif, rendant l'opérateur anosmique face au danger mortel." },
+            { section: "Gestion des Déchets", q: "Dans quelle filière d'élimination doit-on conditionner le dichlorométhane (CH2Cl2) usagé ?", options: ["Filière des déchets biologiques", "Bidon des solvants organiques non-halogénés", "Bidon spécifique des solvants organiques halogénés", "Bidon des solutions aqueuses basiques"], correct: 2, rationale: "La présence d'atomes de chlore requiert une filière d'incinération à très haute température pour éviter la formation de dioxines et furanes (polluants organiques persistants)." },
+            { section: "Gestion des Déchets", q: "Quelle est la destination de tri adéquate pour les déchets liquides d'acétone ou d'éthanol ?", options: ["Bidon des solvants halogénés", "Bidon des solvants organiques non-halogénés", "Rejet à l'évier avec dilution", "Bidon des déchets aqueux acides"], correct: 1, rationale: "Ces composés sont composés uniquement de carbone, hydrogène et oxygène. Ils sont hautement inflammables mais leur incinération ne nécessite pas le traitement spécifique des halogénés." },
+            { section: "Gestion des Déchets", q: "Quelle justification impose la séparation stricte des déchets oxydants (ex: nitrates) et des solvants organiques ?", options: ["La prévention de réactions de précipitation colmatant les bidons", "L'incompatibilité de viscosité perturbant le pompage industriel", "Le risque majeur d'inflammation spontanée, de déflagration ou d'explosion", "La prévention de l'altération des polymères constituant le bidon"], correct: 2, rationale: "L'association d'un comburent puissant (oxydant) et d'un combustible (solvant organique) crée un mélange hypergolique instable, capable d'exploser sans apport d'énergie externe." },
+            { section: "Gestion des Déchets", q: "Quelle évolution chimique dangereuse caractérise les solvants de type éther lors de stockages prolongés ?", options: ["Leur acidification progressive", "Leur polymérisation en résines solides", "La formation de peroxydes organiques instables et hautement explosifs", "L'émission de rayonnements ionisants de faible énergie"], correct: 2, rationale: "Sous l'action de l'oxygène et de la lumière, les éthers forment des hydroperoxydes qui peuvent exploser violemment lors d'une simple friction, d'un choc ou lors de la concentration du solvant." },
+            { section: "Gestion des Déchets", q: "Quel dispositif réglementaire accueille les objets piquants, coupants ou tranchants (OPCT) usagés (scalpels, aiguilles) ?", options: ["Les sacs plastiques de collecte des déchets ménagers", "Les conteneurs de sécurité rigides en plastique inviolable (collecteurs jaunes)", "Les fûts en carton dédiés aux déchets chimiques solides", "Les bidons de solvants halogénés vides"], correct: 1, rationale: "La prévention des accidents d'exposition au sang (AES) ou chimiques pour le personnel de nettoyage exige des réceptacles imperforables et munis de systèmes de fermeture définitive." },
+            { section: "Gestion des Déchets", q: "Quelle filière d'évacuation est destinée à la verrerie de laboratoire accidentée ou hors d'usage ?", options: ["Les conteneurs rigides en carton spécifiquement étiquetés « Verre de laboratoire »", "Les bacs de recyclage de verre domestique de la voie publique", "Les sacs poubelles souples renforcés", "Les fûts d'incinération pour déchets biologiques"], correct: 0, rationale: "Le verre borosilicaté des laboratoires fond à une température différente du verre domestique (refus de recyclage urbain) et doit être conditionné en emballage rigide pour éviter les coupures." },
+            { section: "Gestion des Déchets", q: "Comment doivent être conditionnés les Déchets d'Activités de Soins à Risques Infectieux (DASRI) et déchets biologiques ?", options: ["Dans les fûts de déchets chimiques solides non identifiés", "Dans des conteneurs ménagers standard avec sur-emballage", "Exclusivement dans les emballages jaunes homologués avec le pictogramme de danger biologique", "Par désinfection thermique directe à la flamme"], correct: 2, rationale: "Cette signalétique normalisée déclenche l'application d'un circuit logistique spécifique, de la collecte jusqu'à l'incinération aseptisante ou l'autoclavage industriel." },
+
+            { section: "Risques Spécifiques", q: "En secteur de confinement microbiologique L1, quel profil médical d'utilisateur requiert une vigilance accrue face aux germes opportunistes ?", options: ["Les individus disposant d'un schéma vaccinal complet", "Les sportifs de haut niveau", "Les agents en situation d'immunodépression (pathologie ou traitement)", "Les personnels de maintenance"], correct: 2, rationale: "Bien que les micro-organismes de classe 1 soient considérés inoffensifs pour un sujet sain, ils peuvent développer un pouvoir pathogène chez une personne dont les défenses immunitaires sont altérées." },
+            { section: "Risques Spécifiques", q: "Quelle condition administrative préalable conditionne l'accès et le travail en zone de confinement L2 ?", options: ["La simple notification par courriel au directeur du laboratoire", "L'obtention d'une autorisation formelle délivrée par le responsable de l'installation (I. Gosselin)", "Le port d'une double tenue de protection stérile", "L'activation manuelle du système de dépression aéraulique"], correct: 1, rationale: "Les pathogènes de classe 2 nécessitant des protocoles de désinfection et de gestion de crise stricts, l'accès est légalement restreint aux personnels habilités et enregistrés." },
+            { section: "Risques Spécifiques", q: "Quel principe de physique fondamentale interdit le chauffage d'un appareillage en verre hermétiquement scellé ?", options: ["L'altération de la structure cristalline du borosilicate", "L'inhibition des réactions d'oxydo-réduction", "Le risque critique d'éclatement mécanique induit par la surpression interne des gaz", "La dénaturation thermique rapide des réactifs"], correct: 2, rationale: "En système clos isochore (volume constant), l'élévation de température augmente drastiquement la pression des gaz ou des vapeurs jusqu'à dépasser la limite de rupture du verre (effet grenade)." },
+            { section: "Risques Spécifiques", q: "Parmi les propositions suivantes, laquelle NE CONSTITUE PAS un danger inhérent à la manipulation de l'azote liquide cryogénique ?", options: ["L'anoxie sévère par déplacement de l'oxygène ambiant", "Les brûlures cryogéniques par destruction cellulaire tissulaire", "L'explosion de contenants par expansion volumétrique lors du changement d'état", "L'exposition aux rayonnements ionisants de type Alpha ou Beta"], correct: 3, rationale: "L'azote liquide (-196°C) génère des risques thermiques extrêmes et d'asphyxie (1L de liquide produit environ 700L de gaz), mais n'est doté d'aucune propriété radioactive." },
+            { section: "Risques Spécifiques", q: "Quelles dispositions sécuritaires doivent être inspectées avant la manœuvre d'une bouteille de gaz sous haute pression ?", options: ["L'intégrité de la peinture extérieure et l'étiquetage", "Le chaînage d'amarrage (fixation murale ou paillasse) et l'intégrité du détendeur/manomètre", "La facilité de roulement de l'embase", "Le bruit émis lors d'une légère percussion mécanique"], correct: 1, rationale: "La chute accidentelle d'une bouteille peut entraîner la rupture de la vanne de tête. Le gaz s'échappant à très haute pression transforme alors le cylindre en projectile destructeur." },
+            { section: "Risques Spécifiques", q: "Quelle certification est impérative pour opérer un autoclave de stérilisation ?", options: ["Une certification en prévention incendie", "Le statut de chercheur titulaire", "L'obtention d'une habilitation spécifique relative à la conduite d'appareils sous pression", "Une habilitation d'habilitation électrique H0V0"], correct: 2, rationale: "Les autoclaves combinent haute pression et vapeur d'eau à haute température. Leur utilisation inexperte expose à des risques d'explosion de l'enceinte et de brûlures massives." },
+            { section: "Risques Spécifiques", q: "Quelles contre-indications médicales absolues interdisent l'accès au périmètre des spectromètres RMN (Résonance Magnétique Nucléaire) ?", options: ["Le port de lentilles de contact souples", "La présence de dispositifs cardiaques implantables (pacemakers) ou d'implants ferromagnétiques", "Les restaurations dentaires de type amalgame", "Le port de prothèses auditives externes"], correct: 1, rationale: "Le champ magnétique statique intense généré par l'aimant supraconducteur peut induire un dysfonctionnement létal des pacemakers ou provoquer le déplacement d'implants vasculaires ferromagnétiques." },
+            { section: "Risques Spécifiques", q: "Quelle manœuvre d'urgence doit être exécutée en cas de « quenching » de l'aimant RMN (évaporation explosive de l'hélium liquide) ?", options: ["Isoler la source de la fuite cryogénique", "Activer les extracteurs d'air en demeurant sur place", "Évacuer la zone instantanément pour se soustraire à l'asphyxie par déplacement d'oxygène", "Procéder à la fermeture des vannes de sécurité des bouteilles de gaz comprimé"], correct: 2, rationale: "Le quenching libère des volumes colossaux de gaz cryogénique, provoquant une chute brutale de la concentration en oxygène de la pièce et induisant une perte de connaissance foudroyante." },
+            { section: "Risques Spécifiques", q: "Quel Équipement de Protection Individuelle (EPI) doit être prescrit pour contrer les risques liés aux cuves à ultrasons puissantes ?", options: ["Des écrans faciaux en polycarbonate", "Des masques filtrants de type FFP3", "Des protections auditives normées (casques ou bouchons antibruit)", "Des gants en cotte de mailles anti-vibration"], correct: 2, rationale: "La cavitation ultrasonore génère des fréquences acoustiques de haute intensité. Bien que parfois inaudibles, elles provoquent des lésions neurosensorielles irréversibles de l'oreille interne." },
+
+            { section: "Ergonomie & RPS", q: "Quelle mesure de prévention ergonomique est préconisée face aux contraintes du travail prolongé sur terminal informatique ?", options: ["L'instauration de micro-pauses visuelles et posturales régulières (ex: toutes les 2 heures)", "L'optimisation du contraste lumineux au maximum des capacités de l'écran", "La réduction de la luminosité ambiante de la pièce à l'obscurité quasi totale", "L'ajustement de la distance oculaire à moins de 20 centimètres de la dalle"], correct: 0, rationale: "L'alternance des tâches et les ruptures de posture préviennent l'hypertonie musculaire prolongée, réduisant ainsi l'incidence des Troubles Musculo-Squelettiques (TMS) cervico-dorsaux." },
+            { section: "Ergonomie & RPS", q: "Quelle méthode opératoire permet de neutraliser le risque d'accident lors de la manutention de charges encombrantes ou lourdes ?", options: ["La manipulation manuelle coordonnée par binôme", "Le recours systématique aux équipements d'assistance à la manutention (chariots, diables)", "Le déplacement par glissement au sol", "La réalisation d'exercices d'échauffement lombaire préalables"], correct: 1, rationale: "La mécanisation de la manutention est le seul moyen de prévention primaire efficace contre les pathologies discales et les risques d'écrasement ou de déversement accidentel." },
+            { section: "Ergonomie & RPS", q: "Dans l'évaluation des Risques Psychosociaux (RPS), quel facteur est identifié comme vecteur majeur de l'épuisement professionnel (Burn-out) ?", options: ["Les nuisances sonores ambiantes modérées", "La discordance durable entre l'investissement fourni et le déficit de reconnaissance hiérarchique ou institutionnelle", "La complexité intrinsèque inhérente à la recherche scientifique", "Les contraintes liées à la publication scientifique"], correct: 1, rationale: "Le déséquilibre entre l'effort consenti par l'agent et la récompense perçue (financière, estime, sécurité de l'emploi) est un puissant facteur pathogène générant stress chronique et dépression." },
+            { section: "Ergonomie & RPS", q: "Quelle orientation managériale est institutionnellement valorisée pour consolider la cohésion d'équipe et la santé mentale ?", options: ["L'évaluation axée sur l'analyse stricte des défaillances (management correctif)", "L'approche de type 'laisser-faire' annulant la supervision hiérarchique", "Le management bienveillant privilégiant l'identification et la valorisation des compétences de chaque collaborateur", "L'instauration d'un climat de compétition interne entre chercheurs"], correct: 2, rationale: "Un encadrement centré sur le renforcement positif accroît l'implication, la résilience face à l'échec expérimental et limite l'émergence des conflits interpersonnels." },
+            { section: "Ergonomie & RPS", q: "Comment le cadre réglementaire préconise-t-il la résolution des frictions interpersonnelles ou interculturelles au sein du laboratoire ?", options: ["L'isolement préventif des agents en conflit", "Le recours systématique à des sanctions administratives disciplinaires", "La facilitation d'espaces de dialogue bienveillants considérant la diversité de profils comme une plus-value heuristique", "L'imposition unilatérale de la doctrine managériale de l'encadrant"], correct: 2, rationale: "L'approche systémique des conflits par la communication non violente désamorce les tensions, prévient le harcèlement moral et transforme la diversité d'opinions en intelligence collective." }
+        ];
+
+        let currentQIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let sectionsSummary = [];
+        let userName = "";
+
+        function initSectionsData() {
+            sectionsSummary = [];
+            quizData.forEach((q, index) => {
+                let sec = sectionsSummary.find(s => s.name === q.section);
+                if (!sec) {
+                    sec = { name: q.section, startIndex: index, total: 0, answered: 0, correct: 0 };
+                    sectionsSummary.push(sec);
+                }
+                sec.total++;
+            });
+        }
+
+        function updateSectionScores() {
+            sectionsSummary.forEach(sec => { sec.answered = 0; sec.correct = 0; });
+            quizData.forEach((q, index) => {
+                let sec = sectionsSummary.find(s => s.name === q.section);
+                if (userAnswers[index]) {
+                    sec.answered++;
+                    if (userAnswers[index].isCorrect) sec.correct++;
+                }
+            });
+        }
+
+        function renderDashboard() {
+            updateSectionScores();
+            const container = document.getElementById('section-cards-container');
+            container.innerHTML = '';
+            
+            const icons = {
+                "Règles Générales & Accès": "fa-clipboard-check",
+                "Urgences & Incidents": "fa-fire-extinguisher",
+                "Manipulation & Équipement": "fa-vial-virus",
+                "Gestion des Déchets": "fa-trash-can",
+                "Risques Spécifiques": "fa-biohazard",
+                "Ergonomie & RPS": "fa-brain"
+            };
+
+            sectionsSummary.forEach(sec => {
+                const isCompleted = sec.answered === sec.total;
+                const icon = icons[sec.name] || "fa-book";
+                
+                const card = document.createElement('div');
+                card.className = `section-card bg-white p-4 rounded-xl border border-slate-200 cursor-pointer relative overflow-hidden flex flex-col justify-between h-full ${isCompleted ? 'bg-slate-50 opacity-80' : ''}`;
+                
+                // Valida il nome prima di permettere l'accesso alla sezione
+                card.onclick = () => {
+                    if (validateName()) {
+                        startQuiz(sec.startIndex);
+                    }
+                };
+                
+                const progressPct = (sec.answered / sec.total) * 100;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3 relative z-10">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold ${isCompleted ? 'text-green-600' : 'text-slate-400'} uppercase">
+                                ${sec.answered} / ${sec.total}
+                            </span>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-3 leading-snug relative z-10">${sec.name}</h4>
+                    
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mt-auto relative z-10">
+                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: ${progressPct}%"></div>
+                    </div>
+                    
+                    ${isCompleted ? '<div class="absolute -right-3 -top-3 text-5xl text-green-500 opacity-10"><i class="fa-solid fa-check-circle"></i></div>' : ''}
+                `;
+                container.appendChild(card);
+            });
+            
+            document.getElementById('question-image').src = DEFAULT_IMAGE;
+            document.getElementById('image-container').classList.add('p-4');
+            document.getElementById('image-container').classList.remove('p-8');
+        }
+
+        function validateName() {
+            const nameInput = document.getElementById('user-name').value.trim();
+            if (!nameInput) {
+                document.getElementById('name-error').classList.remove('hidden');
+                document.getElementById('user-name').classList.add('border-red-500');
+                document.getElementById('user-name').focus();
+                return false;
+            }
+            document.getElementById('name-error').classList.add('hidden');
+            document.getElementById('user-name').classList.remove('border-red-500');
+            userName = nameInput;
+            return true;
+        }
+
+        function startQuiz(startIndex = 0) {
+            if (!validateName()) return;
+
+            currentQIndex = startIndex;
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            
+            document.getElementById('left-panel').classList.remove('hidden');
+            document.getElementById('right-panel').classList.remove('w-full');
+            document.getElementById('right-panel').classList.add('md:w-3/5');
+            
+            document.getElementById('image-container').classList.remove('p-4');
+            document.getElementById('image-container').classList.add('p-8');
+
+            loadQuestion();
+        }
+
+        function returnHome() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-start').classList.remove('hidden');
+            
+            document.getElementById('left-panel').classList.remove('hidden');
+            document.getElementById('right-panel').classList.remove('w-full');
+            document.getElementById('right-panel').classList.add('md:w-3/5');
+            
+            renderDashboard();
+        }
+
+        function shuffleOptions(question) {
+            const optionsWithMeta = question.options.map((opt, index) => ({
+                text: opt,
+                originalIndex: index,
+                isCorrect: index === question.correct
+            }));
+            for (let i = optionsWithMeta.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsWithMeta[i], optionsWithMeta[j]] = [optionsWithMeta[j], optionsWithMeta[i]];
+            }
+            return optionsWithMeta;
+        }
+
+        function updateScoreDisplay() {
+            const currentScore = userAnswers.filter(ans => ans && ans.isCorrect).length;
+            document.getElementById('score-display').innerText = currentScore;
+        }
+
+        function loadQuestion() {
+            const qData = quizData[currentQIndex];
+            
+            if (!qData.shuffledOptions) {
+                qData.shuffledOptions = shuffleOptions(qData);
+            }
+            const options = qData.shuffledOptions;
+            const previousAnswer = userAnswers[currentQIndex]; 
+
+            document.getElementById('section-indicator').innerText = qData.section;
+            document.getElementById('question-counter').innerText = `Question ${currentQIndex + 1} / ${quizData.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentQIndex) / quizData.length) * 100}%`;
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const prevBtn = document.getElementById('btn-prev');
+            const nextBtn = document.getElementById('btn-next');
+            
+            if (currentQIndex > 0) prevBtn.classList.remove('hidden');
+            else prevBtn.classList.add('hidden');
+
+            if (previousAnswer) {
+                document.getElementById('rationale-text').innerText = qData.rationale;
+                document.getElementById('rationale-container').classList.remove('hidden');
+                
+                nextBtn.classList.remove('hidden');
+                if (currentQIndex === quizData.length - 1) {
+                    nextBtn.innerHTML = 'Voir les résultats <i class="fa-solid fa-flag-checkered"></i>';
+                } else {
+                    nextBtn.innerHTML = 'Suivant <i class="fa-solid fa-angle-right"></i>';
+                }
+            } else {
+                document.getElementById('rationale-container').classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+            
+            // LOGICA IMMAGINI DAL WEB: q1.jpg, q2.jpg, ecc.
+            const imgEl = document.getElementById('question-image');
+            const targetImageUrl = `${GITHUB_BASE_URL}q${currentQIndex + 1}.jpg`;
+
+            // Se l'immagine q[N].jpg non viene trovata, usa il frontespizio labo.png
+            imgEl.onerror = function() {
+                this.src = DEFAULT_IMAGE;
+                this.onerror = null; 
+            };
+            
+            imgEl.src = targetImageUrl;
+            imgEl.classList.remove('fade-in');
+            void imgEl.offsetWidth; 
+            imgEl.classList.add('fade-in');
+
+            // Renderizza Opzioni
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-300 font-medium text-slate-700 relative overflow-hidden flex items-center gap-3 text-sm sm:text-base';
+                
+                let iconHTML = '';
+                if (previousAnswer) {
+                    btn.disabled = true; 
+                    btn.classList.remove('hover:border-blue-300');
+                    
+                    if (opt.isCorrect) {
+                        btn.classList.add('option-correct');
+                        iconHTML = '<div class="ml-auto text-lg"><i class="fa-solid fa-circle-check"></i></div>';
+                    } else if (index === previousAnswer.selectedIndex && !opt.isCorrect) {
+                        btn.classList.add('option-incorrect');
+                        iconHTML = '<div class="ml-auto text-lg"><i class="fa-solid fa-circle-xmark"></i></div>';
+                    } else {
+                        btn.classList.add('opacity-40');
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(index, opt.isCorrect);
+                }
+
+                btn.innerHTML = `
+                    <div class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm">
+                        ${String.fromCharCode(65 + index)}
+                    </div>
+                    <span class="flex-grow">${opt.text}</span>
+                    ${iconHTML}
+                `;
+                container.appendChild(btn);
+            });
+            
+            updateScoreDisplay();
+        }
+
+        function selectAnswer(selectedIndex, isCorrect) {
+            userAnswers[currentQIndex] = { isCorrect, selectedIndex };
+            loadQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQIndex < quizData.length - 1) {
+                currentQIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                currentQIndex--;
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            updateSectionScores(); 
+            
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('left-panel').classList.add('hidden');
+            document.getElementById('right-panel').classList.remove('md:w-3/5');
+            document.getElementById('right-panel').classList.add('w-full');
+
+            const endScreen = document.getElementById('screen-end');
+            endScreen.classList.remove('hidden');
+
+            const finalScore = userAnswers.filter(ans => ans && ans.isCorrect).length;
+            const percentage = Math.round((finalScore / quizData.length) * 100) || 0;
+            
+            setTimeout(() => {
+                const circle = document.getElementById('score-circle');
+                const offset = 251.2 - (251.2 * percentage) / 100;
+                circle.style.strokeDashoffset = offset;
+                
+                if(percentage >= 80) circle.classList.replace('text-blue-500', 'text-green-500');
+                else if(percentage < 50) circle.classList.replace('text-blue-500', 'text-red-500');
+                else circle.classList.replace('text-blue-500', 'text-yellow-500');
+            }, 100);
+
+            let currentNum = 0;
+            const textEl = document.getElementById('final-score-text');
+            if(percentage > 0) {
+                const interval = setInterval(() => {
+                    if(currentNum >= percentage) {
+                        clearInterval(interval);
+                        textEl.innerText = `${percentage}%`;
+                    } else {
+                        currentNum++;
+                        textEl.innerText = `${currentNum}%`;
+                    }
+                }, 20);
+            } else {
+                textEl.innerText = `0%`;
+            }
+
+            const titleEl = document.getElementById('final-title');
+            const msgEl = document.getElementById('final-message');
+            
+            if (percentage >= 90) {
+                titleEl.innerText = `Excellent, ${userName} ! 🏆`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Vous maîtrisez parfaitement les règles de sécurité.`;
+            } else if (percentage >= 70) {
+                titleEl.innerText = `Très bien, ${userName} ! 👍`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Vous connaissez l'essentiel.`;
+            } else if (percentage >= 50) {
+                titleEl.innerText = `Passable, ${userName} ⚠️`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Une révision est recommandée.`;
+            } else {
+                titleEl.innerText = `Attention, ${userName} 🛑`;
+                msgEl.innerText = `Vous avez obtenu ${finalScore} sur ${quizData.length}. Vos connaissances sont insuffisantes pour manipuler en toute sécurité.`;
+            }
+
+            const breakdownContainer = document.getElementById('results-breakdown-container');
+            breakdownContainer.innerHTML = '';
+            
+            sectionsSummary.forEach(sec => {
+                const secPct = sec.answered > 0 ? Math.round((sec.correct / sec.total) * 100) : 0;
+                let colorClass = 'bg-blue-500';
+                if(secPct >= 80) colorClass = 'bg-green-500';
+                else if(secPct < 50 && sec.answered > 0) colorClass = 'bg-red-500';
+                else if (sec.answered > 0) colorClass = 'bg-yellow-500';
+                else colorClass = 'bg-slate-300'; 
+
+                breakdownContainer.innerHTML += `
+                    <div class="mb-3">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-xs font-bold text-slate-700">${sec.name}</span>
+                            <span class="text-xs font-semibold text-slate-500">${sec.correct}/${sec.total} pts (${secPct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                            <div class="${colorClass} h-2 rounded-full" style="width: ${secPct}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function sendEmail() {
+            const finalScore = userAnswers.filter(ans => ans && ans.isCorrect).length;
+            const percentage = Math.round((finalScore / quizData.length) * 100) || 0;
+            
+            let bodyText = `Bonjour,\n\nVoici les résultats du Test de Prévention et Sécurité de ${userName}.\n\n`;
+            bodyText += `Score global : ${finalScore} / ${quizData.length} (${percentage}%)\n\n`;
+            bodyText += `Détail par section :\n`;
+            
+            sectionsSummary.forEach(sec => {
+                const secPct = sec.answered > 0 ? Math.round((sec.correct / sec.total) * 100) : 0;
+                bodyText += `- ${sec.name} : ${sec.correct}/${sec.total} (${secPct}%)\n`;
+            });
+            
+            bodyText += `\nCordialement.`;
+            
+            const subject = encodeURIComponent(`Résultats Quiz Sécurité - ${userName}`);
+            const body = encodeURIComponent(bodyText);
+            const mailtoLink = `mailto:nicola.damelio@u-picardie.fr?subject=${subject}&body=${body}`;
+            
+            window.location.href = mailtoLink;
+        }
+
+        window.onload = () => {
+            initSectionsData();
+            renderDashboard();
+        };
+    </script>
+</body>
+</html>
